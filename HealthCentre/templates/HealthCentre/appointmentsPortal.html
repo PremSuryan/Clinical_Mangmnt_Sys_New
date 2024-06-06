@@ -1,0 +1,215 @@
+{% extends "HealthCentre/layout.html" %}
+{% load static %}
+{% block title %}
+Clinical-Appointments
+{% endblock%}
+
+{% block script %}
+    <script src="{% static 'HealthCentre/javascript/checkboxConfirm.js' %}"></script>
+{% endblock %}
+
+{% block bodytag %}
+
+    {% load static %}
+    <body background="{% static 'HealthCentre/images/plain.jpg' %}" style="background-size: auto auto;">
+
+{% endblock %}
+
+
+{% block body %}
+
+    
+    <div class="headingHeader">
+      <h1 style="color: black;">Your Appointments</h1>
+    </div>
+
+    <li class="dropdown-divider"></li>
+    <div class = "superbutton">
+        <a class="button" type ="submit" href="{% url 'doctorappointments' %}">Create new appointment</a>
+    </div> 
+    
+    <div class="dropdown-divider">
+      
+    </div>
+    <!-- form-inline my-2 my-lg-0 -->
+    <form class="search-bar" method="post" action="{% url 'searchAppointments' %}">
+      {% csrf_token %}
+      <div class="form-group search-bar row gx-2">
+        <div class="col">
+        <input name = "searchQuery" class="inputBox" type="search" placeholder="Search Appointments" value ="{{ searchQuery }}" aria-label="Search">
+
+        
+      </div>
+      <div class="col">
+        <input id ="searchByDate" name="searchByDate" type="date" value = "{{ searchDate }}" class="inputBox">
+      </div>
+      <button class="form-group inputBox" type="submit">Search</button>
+
+        
+
+        <!-- btn btn-outline-success my-2 my-sm-0 -->
+      </div>
+    </form>
+    {% if successPrescriptionMessage %}
+        <br>
+            <div style="text-align:center;margin:0 auto;"class="alert alert-warning" role="alert">
+                {{ successPrescriptionMessage }}
+            </div>
+    {% endif %}
+    <br>
+
+    
+    
+    <table class = "prescription-table">
+        <thead>
+          <tr>
+            <!-- <th>  </th> -->
+            <th>Patient Name</th>
+            <th>Date</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+
+        
+        <tbody>
+          {% for appointment in Appointments %}    
+            <tr class="prescription-row">
+                
+                <!-- <div id="prescription-details-{{ prescription.id }}" class="prescription-details"></div>   -->
+              <td>{{ appointment.appointmentpatient }}</td>
+              <td>{{ appointment.date }}</td>
+              <td>{{ appointment.time }}</td>
+              <td><a class="button" href ="{% url 'editAppointments' appointment.id %}">Edit</a></td>
+              <td> <button id = "proxyDelete" onclick = 'proxyDel()'>Use me</button> <a class="button hidein" id = "deletebutton" href ="{% url 'deleteappointment' appointment.id %}">Use Me</a> </td>
+            </tr>
+            <tr class="prescription-details">
+                <td>Doctor Name : {{ appointment.appointmentdoctor }} </td>
+                <!-- <td>ID: {{ prescription.doctor }}</td> ID: {{ prescription.doctor }} -->
+                <td>notes : {{ appointment.notes }}</td>
+                <td>{{ appointment.time }}</td>
+                <!-- <td>{% if prescription.isCompleted %} prescription is completed {% else %} prescription is incomplete {% endif %} </td> -->
+            </tr>    
+          {% endfor %}
+          {% for appointmentPatientsearch in searchAppointmentPatients %}
+          <tr class="prescription-row">
+                
+            <!-- <div id="prescription-details-{{ prescription.id }}" class="prescription-details"></div>   -->
+          <td>{{ appointmentPatientsearch.appointmentpatient }}</td>
+          <td>{{ appointmentPatientsearch.date }}</td>
+          <td><a class="button" href ="{% url 'editAppointments' appointmentPatientsearch.id %}">Edit</a></td>
+          <td><button id = "proxyDelete" onclick = 'proxyDel()'>Use me</button> <a class="button hidein" id = "deletebutton" href ="{% url 'deleteappointment' appointmentPatientsearch.id %}">Use Me</a></td>
+        </tr>
+        
+        <tr class="prescription-details">
+            <td>Doctor Name : {{ appointmentPatientsearch.appointmentdoctor }} </td>
+            <!-- <td>ID: {{ prescription.doctor }}</td> ID: {{ prescription.doctor }} -->
+            <td>notes : {{ appointmentPatientsearch.notes }}</td>
+            <td>{{ appointmentPatientsearch.time }}</td>
+            <!-- <td>{% if prescription.isCompleted %} prescription is completed {% else %} prescription is incomplete {% endif %} </td> -->
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <script>
+        // Add click event listener to each row
+        const rows = document.querySelectorAll('.prescription-row');
+        
+      
+        rows.forEach(row => {
+          row.addEventListener('click', function() {
+            // Get the prescription details div associated with the row
+            // const detailsDiv = this.querySelector('.prescription-details');
+            const detailsRow = row.nextElementSibling;
+      
+            // Toggle the visibility of the details div
+            // detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
+            detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+          });
+        });
+        var delbutton = document.getElementById('deletebutton');
+        var proxyDelete = document.getElementById('proxyDelete');
+        console.log('button clicked :', proxyDelete);
+        function proxyDel(event){
+          console.log('event triggered :', proxyDelete);
+          var isConfirmed = window.confirm("Are you sure you want to delete?");
+          if (isConfirmed){
+            
+            delbutton.click();
+            alert("Thunder deleted!");
+
+          }
+          else {
+            alert("Thunder not willing to Delete")
+            //event.preventDefault();
+          };
+        };
+        
+    </script>
+
+    {% if request.session.isLoggedIn  %}
+      {% if not request.session.isDoctor %}
+      <h1 style="text-align:center;color:black" class = "display-4">
+        Request Prescription.
+      </h1>
+          <br>
+          <br>
+
+          <div class="container center_div"style = "background:rgba(0,0,0,0.6);padding-top:2%;padding-bottom:2%" align ="center" width="300px">
+
+              <form onsubmit="return checkConfirm()" align="center" action="{% url 'onlineprescription' %}" method="post">
+                {% csrf_token %}
+
+                <div class="form-group" >
+
+                    <label  style="color:white">Please select a doctor from the dropdown.</label>
+                    <select name="doctor" class="form-control" placeholder="Select Doctor">
+                        {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">Dr. {{ doctor.name }}   ||   {{ doctor.specialization }} Specialist</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+
+                <br>
+
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1" style = "color:white">Please type the symptoms.</label>
+                    <textarea name = "symptoms" class="form-control"  rows="5" placeholder="Symptoms"></textarea>
+                </div>
+
+                <br>
+
+                <li class="dropdown-divider" style="margin-left:25%;margin-right:25%"></li>
+
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="confirmCheck" >
+                    <label class="form-check-label" ><span class="badge badge-success">CONFIRM</span></label>
+                </div>
+
+                <button type="submit" class="btn btn-warning">Request Prescription</button>
+
+              </form>
+
+          </div>
+
+      {% endif %}
+    {% endif %}
+    
+    <br>
+
+    {% if message %}
+        <div style="text-align:center;margin:0 auto;"class="alert alert-warning" role="alert">
+            {{ message }}
+        </div>
+    {% endif %}
+
+
+{% endblock %}
+
+
+
+
+
+
+
+

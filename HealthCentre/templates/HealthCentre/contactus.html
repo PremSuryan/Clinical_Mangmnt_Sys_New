@@ -1,0 +1,66 @@
+{% extends "HealthCentre/layout.html" %}
+
+{% block title %}
+Clinical - Your Details
+{% endblock %}
+
+{% block bodytag %}
+  {% load static %}
+  <body background="{% static 'HealthCentre/images/plain.jpg' %}" style="background-size: auto auto;">
+{% endblock %}
+
+{% block body %}
+    <br>
+    {% for doctor in doctors %}
+    {% if doctor.name == request.session.Name %}
+    <div class="Backpanel">
+        <div class="container">
+          <div id="doctorDetails">
+            <div class="headingHeader">
+              <a class="superbutton" href="{% url 'editDocDetails' doctor.id %}">Edit Doctor Details</a>
+          </div>
+            <div class="form-inline">
+              <h6>Name: &nbsp;&nbsp;&nbsp;</h6> 
+              <br>
+              <h6 style="color: black">{{ doctor.name }}</h6>
+            </div>
+            <br>
+            <div class="form-inline">
+              <h6>Clinic Name: &nbsp;&nbsp;&nbsp;</h6>
+              <h6 style="color: black">{{ doctor.clinicName }}</h6>
+            </div>
+            <br>
+            <div class="form-inline">
+              <h6>Qualification: &nbsp;&nbsp;&nbsp;</h6>
+              <h6 style="color: black">{{ doctor.educationalQualification }}</h6>
+            </div>
+            <br>
+            <div class="form-inline">
+              <h6>Specialization: &nbsp;&nbsp;&nbsp;</h6>
+              <h6 style="color: black">{{ doctor.specialization }}</h6>
+            </div>
+            <br>
+            <div class="form-inline">
+              <h6>Address: &nbsp;&nbsp;&nbsp;</h6>
+              <h6 style="color: black">{{ doctor.address }}</h6>
+            </div>
+            <br>
+            <div class="form-inline">
+              <h6>Email: &nbsp;&nbsp;&nbsp;</h6>
+              <h6 style="color: black">{{ doctor.email }}</h6>
+            </div>
+            <br>
+            <div class="form-inline">
+              <h6>Contact Number: &nbsp;&nbsp;&nbsp;</h6>
+              <h6 style="color: black">{{ doctor.contactNumber }}</h6>
+            </div>
+          </div>
+
+          <br>
+
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+{% endblock %}

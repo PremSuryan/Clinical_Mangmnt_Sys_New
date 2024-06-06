@@ -1,0 +1,348 @@
+{% extends "HealthCentre/layout.html" %}
+
+
+{% block title %}
+    Clinical- Dashboard
+{% endblock %}
+
+
+{% block style %}
+
+    .carousel-item{
+        height: 500px;
+      }
+    .carousel-item img{
+        height: 500px;
+      }
+
+{% endblock %}
+
+
+{% block bodytag %}
+
+    {% load static %}
+    <body >
+
+{% endblock %}
+
+
+{% block body %}
+
+<!--Container to hold the Appointment-->
+
+    <div class="container-fluid-sm homeAppointments">
+        
+        <!--Row 1 to hold columns-->
+        <div class="row appointmentrow ">
+            
+            <!--Column 1 to hold content-->
+            <div class="col-md appointmentcolumn">
+                <div id="currentAppointment" class="mainAppointment makeItFlex">
+                    
+                    
+                <div id = "nextAppointment"></div>
+                <h6> Next Appointment </h6> 
+                <h6 id = "status" name = "status"> {{ status }} </h6> 
+                    <h6 id = "appointTime" name = "appointTime"> {{ nextFirstAppoint.time }} </h6>
+                    <!-- {{ nextFirstAppoint.time }} -->
+                    <h6 id = "appointDate"> {{ nextFirstAppoint.date }} </h6>
+                    <h6 id = "appointPatient"> {{ nextFirstAppoint.appointmentpatient }} </h6>
+                    <h6 id = "appointNotes"> {{ nextFirstAppoint.notes }} </h6> 
+                </div>
+            </div>
+            
+            <!--Column 1 to hold content-->
+            <div class="col-md appointmentrow">
+                <ul class="container-fluid justify-content-center" id = 'appointmentList'>
+                    
+                    <li class="col-fluid-md" style="list-style: none;" id = 'appointListItem'>
+                        <div class="appointListItem" id = 'listcontent'>
+                            <h6> Next Appointments fo the day </h6> 
+                        <div class="datalist" id = "listTime">{{curAppoint.time}}</div>
+                        <div class="datalist" id = "listDate">{{curAppoint.Date}}</div>
+                        <div class="datalist" id = "listPatient">{{curAppoint.appointmentpatient}}</div>
+                        <div class="datalist" id = "listNotes">{{curAppoint.notes}}</div>
+                        </div>
+                    </li>
+                    
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+
+<!-- Container to hold data cells  style="color: antiquewhite;" -->
+    <div class="container-fluid" >
+        <div class="row">
+            <!-- <div class="col datacols">Registerd Patients</div> -->
+            <div class="col-md appointmentrow">
+                <h6> Pending Appointments: </h6>
+                <ul class="container-fluid justify-content-center" id = 'LastAppointmentList'>
+                    <!--This below should repeat as a list item using python and data from backend-->
+                     
+                    <li class="col-fluid-md" style="list-style: none;" id = 'appointListItem'>
+                        <div class="appointListItem" id = 'listLastcontent'>
+                        <div class="datalist" id = "listTime">{{curAppoint.time}}</div>
+                        <div class="datalist" id = "listDate">{{curAppoint.Date}}</div>
+                        <div class="datalist" id = "listPatient">{{curAppoint.appointmentpatient}}</div>
+                        <div class="datalist" id = "listNotes">{{curAppoint.notes}}</div>
+                        </div>
+                    </li>   
+                </ul>
+            </div>
+            <div class="col datacols">Completed Appointments</div>
+        </div>
+        <div class="row">
+            <div class="col datacols">Revenue</div>
+            <div class="col datacols">Analytics</div>
+        </div>
+    </div>
+
+    {% if request.session.isLoggedIn %}
+      {% else %}
+      <div class="jumbotron" style="margin: 0 auto;">
+          <h1 class="display-4">Hey there! Haven't registered yet?!</h1>
+          <p class="lead">Register yourself today and get access to all the benefits of the Health Centre!</p>
+          <hr class="my-4">
+          <p>You must be a member to have access to this facility.</p>
+          <a class="btn btn-primary btn-lg" href="{% url 'register' %}" role="button">Register</a>
+      </div>
+    {% endif %}
+
+
+    <!--
+    <div>
+        <hr class="my-4">
+        <h1 class ="display-3"style="text-align:center;color:white">Footer Zone</h1>
+        <li class="dropdown-divider" style="margin-left:25%;margin-right:25%;border-color:rgb(255, 255, 255)"></li>
+
+        <div class="row"style="margin: 0 auto;" >
+
+            <div class="col-sm-6" style = "margin-top:2%">
+                <div class="card">
+                    <div class="card-body">
+
+                        <h5 class="card-title">Medical Store </h5>
+                        <li class="dropdown-divider" style="margin-right:15%"></li>
+                        <p class="card-text">Avail benefits of online medical store!</p>
+                        <a href="{% url 'MedicalStore:index' %}" class="btn btn-primary">MEDICAL STORE</a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6" style="margin-top:2%">
+                <div class="card">
+                    <div class="card-body">
+
+                        <h5 class="card-title">Emergency Ambulance</h5>
+                        <li class="dropdown-divider" style="margin-right:15%"></li>
+                        <p class="card-text">Get immediate ambulance in emergency situation.</p>
+                        <a href="{% url 'emergency' %}" class="btn btn-primary">EMERGENCY</a>
+
+                    </div>
+                </div>
+            </div>
+
+      </div>
+
+        <div class="row"style="margin: 0 auto;" >
+
+            <div class="col-sm-6" style ="margin-top:2%">
+                <div class="card">
+                    <div class="card-body">
+
+                        <h5 class="card-title">Online Prescription</h5>
+                        <li class="dropdown-divider" style="margin-right:15%"></li>
+                        <p class="card-text">Get online hassle-free prescription from doctor.</p>
+                        <a href="{% url 'onlineprescription' %}" class="btn btn-primary">ONLINE PRESCRIPTION</a>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6" style="margin-top:2%">
+                <div class="card">
+                    <div class="card-body">
+
+                        <h5 class="card-title">Contact Us</h5>
+                        <li class="dropdown-divider" style="margin-right:15%"></li>
+                        <p class="card-text">24 x 7 Help Line Availability.</p>
+                        <a href="{% url 'contactus' %}" class="btn btn-primary">CONTACT US</a>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+-->
+    <div id="Footer" style="bottom: 0;width: 100%;">
+        <h6 style="text-align:center;color:black;background-color:#dddddd;margin: 0 auto;">
+            <hr class="my-4"style="margin: 0 auto;" >
+                ©2024 All Rights Reserved, Ping.ai
+                <br>
+                <br>
+        </h6>
+    <div>
+<script>
+
+    function formatTime(rawTime) {
+        // Parse the time string into a Date object
+        var time = new Date('2000-01-01T' + rawTime + 'Z'); // Use a dummy date for parsing
+        var timeComponents = rawTime.split(':');
+        // Extract hours, minutes, and AM/PM from the parsed time
+        var hours = parseInt(timeComponents[0], 10);
+        
+        var minutes = parseInt(timeComponents[1], 10);
+        
+        var ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Handle midnight (0 hours)
+        hours = ('0' + hours).slice(-2);
+        minutes = ('0' + minutes).slice(-2);
+        // Construct the formatted time string
+        var formattedTime = hours + ':' + minutes + ' ' + ampm;
+    
+        return formattedTime;
+    }
+
+    function formatDate(rawDate) {
+        var dateObject = new Date(rawDate);
+        var day = dateObject.getDate();
+        var monthIndex = dateObject.getMonth();
+        var year = dateObject.getFullYear();
+        var monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+        var monthName = monthNames[monthIndex];
+        var formattedDate = monthName + ' ' + day + ', ' + year;
+
+        return formattedDate;
+
+    }
+
+    $(document).ready(function() {
+        function currentAppointment() {
+            $.ajax({
+                type : 'GET',
+                url : "{% url 'updateDashboard' %}",
+                //data : {
+                //    csrfmiddlewaretoken: '{{ csrf_token }}',
+                //},
+                dataType : 'json',
+                success : function(data) {
+
+                        
+                        var nextFirstAppoint = data.nextFirstAppoint;
+                        if (nextFirstAppoint != null) {
+                        var formattedTime = formatTime(nextFirstAppoint.fields.time);
+                        var formattedDate = formatDate(nextFirstAppoint.fields.date);
+                        
+                        $('#appointDate').html(formattedDate);
+                        $('#appointTime').html(formattedTime);
+                        $('#appointPatient').val(nextFirstAppoint.fields.appointmentpatient);
+                        $('#appointNotes').val(nextFirstAppoint.fields.notes);
+                        $('#status').val(data.status);
+                        } else {
+                            $('#appointDate').html('');
+                            $('#appointTime').html('');
+                            $('#appointPatient').val('');
+                            $('#appointNotes').val('');
+                            $('#status').val('no more appointments today...');
+                        }
+
+
+                        
+                        var curAppoints = data.curAppoints;
+                        
+                        
+                        var appointmentList = document.getElementById('appointmentList');
+                        var appointListItem = document.getElementById('appointListItem');
+                        var appointListContent = document.getElementById('listcontent');
+                        appointmentList.innerHTML = '';
+                        //appointListItem.innerHTML = '';
+                        if (curAppoints !== null) {
+                        curAppoints.forEach(function(appoint){
+                            var formattedListTime = formatTime(appoint.fields.time);
+                            var formattedListDate = formatDate(appoint.fields.date);
+                            var $listItem = $('<li class="col-fluid-md" style="list-style: none;"></li>');
+                            var $listContent = $('<div class="appointListItem" id="listcontent"></div>');
+                           // var $listItemContent = $('<div class="appointListItem"></div>');
+                            var $listTime = $('<div class="datalist listTime"></div>');
+                            var $listDate = $('<div class="datalist listDate"></div>');
+                            var $listPatient = $('<div class="datalist listPatient"></div>');
+                            var $listNotes = $('<div class="datalist listNotes"></div>');
+                            var $status = $('<div class="datalist status"></div>');
+                            //$('#listTime').html(formattedListTime);
+                            //$('#listDate').html(formattedListDate);
+                            //$('#listPatient').html(appoint.fields.appointmentpatient);
+                            //$('#listNotes').html(appoint.fields.notes);
+                            $listTime.text(formattedListTime);
+                            $listDate.text(formattedListDate);
+                            $listPatient.text(appoint.fields.appointmentpatient);
+                            $listNotes.text(appoint.fields.notes);
+                            $status.text(appoint.fields.status);
+                            //var listcontect = $listItemContent.append($listTime, $listDate, $listPatient, $listNotes);
+                            //console.log('contentList : ', listcontect)
+                            //$listItem.append($listItemContent);
+                            $listContent.append($listTime, $listDate, $listPatient, $listNotes, $status);
+                            $listItem.append($listContent);
+                            //appointListContent.appendChild($listItem[0]);
+                            //appointListItem.appendChild(appointListContent[0]);
+                            appointmentList.appendChild($listItem[0]);
+                        
+                        });
+                        } else {
+                            
+                            appointmentList.innerHTML = '<li>No appointments available</li>';
+                        }
+                        var lastIncompleteAppoints = data.lastIncompleteAppoint;
+
+                        var LastAppointmentList = document.getElementById('LastAppointmentList');
+                        LastAppointmentList.innerHTML = '';
+                        if (lastIncompleteAppoints != null) {
+                        lastIncompleteAppoints.forEach(function(lastAppoint){
+                            var formattedListTime = formatTime(lastAppoint.fields.time);
+                            var formattedListDate = formatDate(lastAppoint.fields.date);
+                            var $listItem = $('<li class="col-fluid-md" style="list-style: none;"></li>');
+                            var $listContent = $('<div class="appointListItem" id="listLastcontent"></div>');
+                            var $listTime = $('<div class="datalist listTime"></div>');
+                            var $listDate = $('<div class="datalist listDate"></div>');
+                            var $listPatient = $('<div class="datalist listPatient"></div>');
+                            var $listNotes = $('<div class="datalist listNotes"></div>');
+                            var $isCompleted = $('<div class="datalist listNotes"><button class="button" onclick = "completeAppoint()">Completed</button></div>');
+                            $listTime.text(formattedListTime);
+                            $listDate.text(formattedListDate);
+                            $listPatient.text(lastAppoint.fields.appointmentpatient);
+                            $listNotes.text(lastAppoint.fields.notes);
+                            $listContent.append($listTime, $listDate, $listPatient, $listNotes, $isCompleted);
+                            $listItem.append($listContent);
+                            console.log($listItem);
+                            LastAppointmentList.appendChild($listItem[0]);
+                        });
+                    } else {
+                        LastAppointmentList.innerHTML = 'no appointments';
+                    }
+
+                    //$('#status').val(data.status);
+                   // $('#nextAppointment').empty();
+                    //if(data.nextFirstAppoint) {
+                   //     var nextAppoint = '<div class = "appointment">' +
+                     //       '<h6>' + appointment.appointTime + '</h6>' +
+                    //        '<p>' + appointment.appointDate + '</p>' +
+                    //        '<p>' + appointment.appointPatient + '</p>' +
+                       //     '<p>' + appointment.appointNotes + '</p>' +
+                     //       '</div>';
+                     //      $('#nextAppointment').append(nextAppoint);
+                    //}
+                    
+                }
+            });
+        }
+        currentAppointment();
+
+        setInterval(currentAppointment, 5000);
+    })
+</script>
+{% endblock %}

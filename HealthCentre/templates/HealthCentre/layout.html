@@ -1,0 +1,141 @@
+<!-- {% load static %} -->
+
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=yes">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+        <title>{% block title %} Clinical {% endblock %}</title>
+        
+        <!-- <style>{% block style %}{% endblock %}</style> -->
+
+        <script src="{% static 'HealthCentre/javascript/windowHistory.js' %}"></script>
+        <link rel="stylesheet" href="../../static/HealthCentre/css/styles.css">
+        {% block script %}
+             
+        {% endblock %}
+        
+  
+            
+
+    </head>
+    
+    {% block bodytag %}
+        {% load static %}
+        <body background="{% static 'HealthCentre/images/plain.jpg' %}" style="background-size: auto auto;">
+    {% endblock %}
+
+   
+    
+    <nav class="navbar navbar-expand-lg bg-body-tertiary navbar-dark navstyle">
+        <div class="container-fluid">
+                {% if request.session.isLoggedIn %}
+                <a class="navbar-brand" href="/"><h4 style="color:rgb(0, 0, 0);text-align:center;text-decoration: none !important">Dr. {{ request.session.Name }}</h4></a>
+                {% else %}
+                <a class="navbar-brand" href="/"><h2 style="color:black;text-align:center;text-decoration: none !important">Clinical</h2></a>
+                {% endif %}
+
+                <!-- <img src="{% static 'HealthCentre/images/jdh10.png' %}" style="width:5%;height:5%;"></img> -->
+                <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            
+
+       
+                <ul class="navbar-nav navParentMobile">
+
+                    <!-- <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'login' %}" style="color:black">Home <span class="sr-only">(current)</span></a>
+                    </li> -->
+
+                    {% if request.session.isLoggedIn %}
+                    {% if request.session.isDoctor %}
+                    <li class="nav-item listitem">
+                        <a class="nav-link " href="{% url 'dashboard' %}" style="color:black">Dashboard </a>
+                        {% comment %} <span class="badge badge-primary badge-pill">{{ request.session.numberNewPrescriptions }} NEW</span> {% endcomment %}
+                    </li>
+                    <li class="nav-item listitem">
+                        <a class="nav-link " href="{% url 'yourPrescriptions' %}" style="color:black">Your Prescriptions </a>
+                        {% comment %} <span class="badge badge-primary badge-pill">{{ request.session.numberNewPrescriptions }} NEW</span> {% endcomment %}
+                    </li>
+                    <li class="nav-item listitem">
+                        <a class="nav-link" href="{% url 'doctorappointmentsfalse' %}" style="color:black">Your Appointments </a>
+                        {% comment %} <span class="badge badge-primary badge-pill">{{ request.session.numberNewAppointments }} NEW</span> {% endcomment %}
+                    </li>
+                    <li class="nav-item listitem">
+                        <a class="nav-link" href="{% url 'createTimeline' %}" style="color:black"> Timeline </a>
+                    </li>
+                    <li class="nav-item listitem">
+                        <a class="nav-link" href="{% url 'catchqrcode' %}" style="color:black"> QRCode </a>
+                    </li>
+                    <li class="nav-item listitem">
+                        <a class="nav-link" href="{% url 'patMed' %}" style="color:black"> Patient/Medicine Details </a>
+                    </li>
+                    
+                    {% endif %}
+                    {% else %}
+                    <li class="nav-item listitem">
+                        <a class="nav-link" href="{% url 'login' %}" style="color:black">Login</a>
+                    </li>
+                    {% endif %}
+
+                    <li class = "nav-item listitem">
+                        <a class="nav-link" style="color:black" href="{% url 'doctors' %}">Your Details</a>
+                    </li>
+                
+                    {% if request.session.isLoggedIn %}
+                            
+                   
+                    <li class = "nav-item listitem">
+                        <a class="nav-link" style="color:black" href="{% url 'updateExcel' %}">Dowload Excel</a>
+                    </li>
+
+                    <li class = "nav-item listitem" style="color:white;background-color: rgb(255, 45, 45);">
+                        <a class="nav-link"  href="{% url 'logout' %}">Logout</a>
+                    </li>
+                    
+                    <!-- <li class="nav-item listitem">
+                        <h6 class ="nav-link" name = "wppStatus" id ="wppStatus" style="color:black"> {{ wppStatus }} </h6>
+                    </li>
+                    <li class="nav-item hideout listitem" id="whatsappUnhide" >
+                        <a class="nav-link"  href="{% url 'whatsappBrowser' %}" style="color:black"> Connect Whatsapp </a>
+                    </li> -->
+
+                    {% endif %}
+                </ul>
+
+            </div>
+    </nav>
+    
+    <li class="dropdown-divider" style="margin:10px;border-color:rgb(41, 41, 41)"></li>
+
+{% block body %}
+
+{% endblock %}
+
+            <!-- Optional JavaScript -->
+            <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+            <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+            <!-- <script src="https://code.jquery.com/jquery-3.7.0.js" integrity="sha256-JlqSTELeR4TLqP0OG9dxM7yDPqX1ox/HfgiSLBj8+kM=" crossorigin="anonymous"></script> -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+            
+        </body>
+        <script>
+            var testData
+            
+            // document.addEventListener("DOMContentLoaded", function () {
+    
+            // });
+  
+  
+    
+        </script>
+
+</html>

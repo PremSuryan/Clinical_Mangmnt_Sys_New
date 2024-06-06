@@ -1,0 +1,61 @@
+{% extends "HealthCentre/layout.html" %}
+
+{% block title %}
+Clinical - Your Details
+{% endblock %}
+
+{% block bodytag %}
+  {% load static %}
+  <body background="{% static 'HealthCentre/images/plain.jpg' %}" style="background-size: auto auto;">
+{% endblock %}
+
+{% block body %}
+    <br>
+    {% for doctor in doctors %}
+    {% if doctor.name == request.session.Name %}
+
+    <div id="editDoctorForm">
+        <form method="post" action="{% url 'editDocDetails' doctor.id %}">
+          {% csrf_token %}
+          <div class="form-inline">
+            <label for="name">Name: &nbsp;&nbsp;&nbsp;</label>
+            <input type="text" id="name" name="name" value="{{ doctor.name }}">
+          </div>
+          <br>
+          <div class="form-inline">
+            <label for="clinicName">Clinic Name: &nbsp;&nbsp;&nbsp;</label>
+            <input type="text" id="clinicName" name="clinicName" value="{{ doctor.clinicName }}">
+          </div>
+          <br>
+          <div class="form-inline">
+            <label for="educationalQualification">Qualification: &nbsp;&nbsp;&nbsp;</label>
+            <input type="text" id="educationalQualification" name="educationalQualification" value="{{ doctor.educationalQualification }}">
+          </div>
+          <br>
+          <div class="form-inline">
+            <label for="specialization">Specialization: &nbsp;&nbsp;&nbsp;</label>
+            <input type="text" id="specialization" name="specialization" value="{{ doctor.specialization }}">
+          </div>
+          <br>
+          <div class="form-inline">
+            <label for="address">Address: &nbsp;&nbsp;&nbsp;</label>
+            <input type="text" id="address" name="address" value="{{ doctor.address }}">
+          </div>
+          <br>
+          <div class="form-inline">
+            <label for="email">Email: &nbsp;&nbsp;&nbsp;</label>
+            <input type="email" id="email" name="email" value="{{ doctor.email }}">
+          </div>
+          <br>
+          <div class="form-inline">
+            <label for="contactNumber">Contact Number: &nbsp;&nbsp;&nbsp;</label>
+            <input type="text" id="contactNumber" name="contactNumber" value="{{ doctor.contactNumber }}">
+          </div>
+          <br>
+          <button type="submit" value="Save">submit</button>
+        </form>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+{% endblock %}

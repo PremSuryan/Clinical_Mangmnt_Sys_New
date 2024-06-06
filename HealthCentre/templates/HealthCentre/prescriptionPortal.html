@@ -1,0 +1,206 @@
+{% extends "HealthCentre/layout.html" %}
+{% load static %}
+{% block title %}
+Clinical-Prescriptions
+{% endblock%}
+
+{% block script %}
+<script src="{% static 'HealthCentre/javascript/checkboxConfirm.js' %}"></script>
+
+{% endblock %}
+
+{% block bodytag %}
+
+{% load static %}
+
+<body background="{% static 'HealthCentre/images/plain.jpg' %}" style="background-size: auto auto;">
+
+  {% endblock %}
+
+
+  {% block body %}
+
+  <div class="headingHeader">
+    <h1 style="color: black;">Prescriptions</h1>
+  </div>
+
+  <li class="dropdown-divider" style="margin-left:25%;margin-right:25%;border-color:rgb(85, 85, 85)"></li>
+  <div class="superbutton">
+    <a class="button" align="right" type="submit" 
+      href="{% url 'doctorprofile' %}">Write new prescription</a>
+  </div>
+  {% if successPrescriptionMessage %}
+  <div style="text-align:center;margin:0 auto;" class="alert alert-warning" role="alert">
+    {{ successPrescriptionMessage }}
+  </div>
+  {% endif %}
+  <li class="dropdown-divider" style="margin-left:25%;margin-right:25%;border-color:rgb(85, 85, 85)"></li>
+
+
+  <div class="container-fluid">
+
+    <form class="search-bar" method="post" action="{% url 'searchPrescriptions' %}">
+      {% csrf_token %}
+      <div class="form-group search-bar row gx-2">
+        <div class="col">
+          <input name="searchQuery" class="inputBox" type="search" placeholder="Search Prescriptions"
+            value = '{{ searchQuery }}' aria-label="Search">
+        </div>
+        <div class="col">
+          <input id="searchByDate" class="inputBox" name="searchByDate" type="date" value = '{{ searchDate }}'>
+        </div>
+        <button class="form-group inputBox " type="submit">Search</button>
+        <!-- btn btn-outline-success my-2 my-sm-0 -->
+
+      </div>
+    </form>
+  </div>
+
+  <table class="prescription-table ">
+    <thead>
+      <tr>
+        <!-- <th>  </th> -->
+        <th>Patient Name</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for prescription in prescriptions %}
+      <tr class="prescription-row">
+        <!-- <td><button class="tree-toggle" data-prescription-id="{{ prescription.id }}">Edit</button></td> -->
+        <!-- <div id="prescription-details-{{ prescription.id }}" class="prescription-details"></div>   -->
+        <td>{{ prescription.prescribingPatient }}</td>
+        <td>{{ prescription.timestamp }}</td>
+        <td><button id="proxyDelete" onclick='proxyDel()'>Use me</button> <a class="button hidein" id="deletebutton"
+            href="{% url 'deleteprescription' prescription.id %}">Use Me</a></td>
+      </tr>
+
+      <tr class="prescription-details">
+        <td>Doctor Name : {{ prescription.prescribingDoctor }} </td>
+        <!-- <td>ID: {{ prescription.doctor }}</td> ID: {{ prescription.doctor }} -->
+        <td>Prescription : {{ prescription.prescriptionText }}</td>
+        <td>{% for medicine in prescription.medicine.all %}
+          {{ medicine.MedicineName }}
+          {% endfor %}
+        </td>
+        <td>{{ prescription.timestamp }}</td>
+
+      </tr>
+      {% endfor %}
+
+      {% for prescriptionPatientsearch in searchPrescriptionPatients %}
+      <tr class="prescription-row">
+        <!-- <td><button class="tree-toggle" data-prescription-id="{{ prescription.id }}">Edit</button></td> -->
+        <!-- <div id="prescription-details-{{ prescription.id }}" class="prescription-details"></div>   -->
+        <td>{{ prescriptionPatientsearch.prescribingPatient }}</td>
+        <td>{{ prescriptionPatientsearch.timestamp }}</td>
+        <td><button id="proxyDelete" onclick='proxyDel()'>Use me</button> <a class="button hidein" id="deletebutton"
+            href="{% url 'deleteprescription' prescriptionPatientsearch.id %}">Delete</a></td>
+      </tr>
+      <tr class="prescription-details">
+        <td>Doctor Name : {{ prescriptionPatientsearch.prescribingDoctor }} </td>
+        <!-- <td>ID: {{ prescription.doctor }}</td> ID: {{ prescription.doctor }} -->
+        <td>Prescription : {{ prescriptionPatientsearch.prescriptionText }}</td>
+        <td>{% for medicine in prescriptionPatientsearch.medicine.all %}
+          {{ medicine.MedicineName }}
+          {% endfor %}
+        </td>
+        <td>{{ prescriptionPatientsearch.timestamp }}</td>
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <script>
+    // Add click event listener to each row
+    const rows = document.querySelectorAll('.prescription-row');
+
+    rows.forEach(row => {
+      row.addEventListener('click', function () {
+        // Get the prescription details div associated with the row
+        // const detailsDiv = this.querySelector('.prescription-details');
+        const detailsRow = row.nextElementSibling;
+
+        // Toggle the visibility of the details div
+        // detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
+        detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+      });
+    });
+    var delbutton = document.getElementById('deletebutton');
+    console.log(delbutton);
+    function proxyDel() {
+      var isConfirmed = window.confirm("Are you sure you want to delete?");
+      if (isConfirmed) {
+        delbutton.click();
+        alert("Element deleted!");
+      }
+      else {
+        alert("Deletion canceled.");
+      };
+
+    };
+
+
+
+
+  </script>
+
+  {% if request.session.isLoggedIn %}
+  {% if not request.session.isDoctor %}
+  <h1 style="text-align:center;color:black" class="display-4">
+    Request Prescription.
+  </h1>
+  <br>
+  <br>
+
+  <div class="container center_div" style="background:rgba(0,0,0,0.6);padding-top:2%;padding-bottom:2%" align="center"
+    width="300px">
+
+    <form onsubmit="return checkConfirm()" align="center" action="{% url 'onlineprescription' %}" method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+
+        <label style="color:white">Please select a doctor from the dropdown.</label>
+        <select name="doctor" class="form-control" placeholder="Select Doctor">
+          {% for doctor in doctors %}
+          <option value="{{ doctor.id }}">Dr. {{ doctor.name }} || {{ doctor.specialization }} Specialist</option>
+          {% endfor %}
+        </select>
+
+      </div>
+
+      <br>
+
+      <div class="form-group">
+        <label for="exampleFormControlTextarea1" style="color:white">Please type the symptoms.</label>
+        <textarea name="symptoms" class="form-control" rows="5" placeholder="Symptoms"></textarea>
+      </div>
+
+      <br>
+
+      <li class="dropdown-divider" style="margin-left:25%;margin-right:25%"></li>
+
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="confirmCheck">
+        <label class="form-check-label"><span class="badge badge-success">CONFIRM</span></label>
+      </div>
+
+      <button type="submit" class="btn btn-warning">Request Prescription</button>
+
+    </form>
+
+  </div>
+
+  {% endif %}
+  {% endif %}
+
+  <br>
+
+  {% if message %}
+  <div style="text-align:center;margin:0 auto;" class="alert alert-warning" role="alert">
+    {{ message }}
+  </div>
+  {% endif %}
+
+  {% endblock %}

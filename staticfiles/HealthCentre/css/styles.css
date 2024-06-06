@@ -1,0 +1,457 @@
+body {
+    background-color: #242424 !important;
+}
+
+.hideout {
+    display: none;
+}
+
+.makeItFlex {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    margin: auto;
+}
+
+.nav-link {
+    padding: 0;
+}
+
+.hidein {
+    display: block;
+}
+
+.navstyle {
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 5px;
+    border-radius: 10px;
+}
+
+.menubar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.flexer {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: auto;
+    width: 100%;
+    background-color: antiquewhite;
+}
+
+.navItem {
+    background-color: cornflowerblue;
+    margin: 0px 5px;
+}
+
+
+.listitem {
+
+    list-style-type: none;
+    background-color: cornflowerblue;
+    border: none;
+    width: 80px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0%;
+    margin: 0.2ch;
+}
+
+.listitem a {
+    font-size: 0.7em;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.listitem:hover {
+    list-style-type: none;
+    background-color: rgb(74, 122, 255);
+    border: none;
+    border-radius: 5px;
+
+}
+.iconname {
+    font-size: 1em;
+    padding: 0px !important;
+    margin: 0px;
+    color: whitesmoke;
+}
+
+.iconPicture {
+    background: "bi-file-earmark-medical-fill";
+}
+
+@media only screen and (max-width: 768px) {
+
+    .navbar .container-fluid {
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .navbar .container-fluid .navbar-brand {
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+
+    .navbar-toggler {
+        display: none;
+    }
+
+
+    .navParentMobile {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .listitem {
+
+        list-style-type: none;
+        background-color: cornflowerblue;
+        border: none;
+        width: 80px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0%;
+        margin: 0.2ch;
+    }
+
+    .listitem a {
+        font-size: 0.7em;
+        font-weight: 500;
+    }
+
+    .listitem:hover {
+        list-style-type: none;
+        background-color: rgb(74, 122, 255);
+        border: none;
+        border-radius: 5px;
+
+    }
+
+    .searchInputBox{
+        width: 100%;
+
+    }
+
+}
+
+.searchInputBox{
+    width: 50%;
+
+}
+
+.form-group button {
+    background-color: cornflowerblue;
+    color: rgb(255, 255, 255);
+    padding: 10px 10px;
+    width: 90%;
+}
+
+.form-group button:hover {
+    background-color: rgb(35, 107, 240);
+}
+
+.prescription-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+
+}
+
+.prescription-table thead{
+    
+    width: 100%;
+    margin: auto;
+}
+
+/* .prescription-table thead tr
+{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+} */
+
+.prescription-table th,
+.prescription-table td {
+    padding: 10px ; /*20px*/
+    text-align: left; /*centre*/
+    border-bottom: 1px solid #000000;
+
+    /* display: flex; */
+}
+
+.prescription-table th {
+    background-color: #f2f2f283;
+  }
+  .prescription-table tr {
+    background-color: #f2f2f283;
+  }
+
+.prescription-table tr:hover {
+    background-color: #ffffff4f;
+}
+
+
+.prescription-details {
+    display: none;
+    background-color: #f5f5f5;
+    padding: 10px;
+}
+
+.search-bar {
+
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+
+.tableButton{
+    width: 80%;
+    background-color: cornflowerblue;
+    border: none;
+    border-radius: 1ch; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tableButton a{
+    text-decoration: none;
+    color: #1b1b1b;
+}
+
+@media only screen and (max-width: 700px) {
+
+    .search-bar {
+        display: flex;
+        justify-content: space-evenly;
+        flex-direction: column;
+        margin: auto 10%;
+
+    }
+}
+
+.inputBox {
+    border: none;
+    height: 40px;
+    border-radius: 10px;
+    margin: 10px 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.form-group input {
+    background-color: rgb(230, 230, 230);
+    color: darkslategray;
+    padding: 10px;
+    margin: 5px auto;
+}
+
+.tableClass {
+    border-radius: 20px;
+    background-color: brown;
+    margin: 20px 0px;
+}
+
+
+
+
+.hidein {
+    visibility: none;
+    display: none;
+}
+
+
+
+.superbutton {
+    width: 300px;
+    background-color: cornflowerblue;
+    margin: 10px auto;
+    color: #f5f5f5;
+    padding: 5px;
+    text-align: center;
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+}
+
+.superbutton:hover {
+    width: 300px;
+    background-color: rgb(43, 107, 224);
+    margin: 10px auto;
+    color: #f5f5f5;
+    padding: 5px;
+    text-align: center;
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+}
+
+.superbutton a {
+    color: white;
+    text-decoration: none;
+
+}
+
+.headingHeader {
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px 50px;
+    color: #f2f2f2;
+}
+
+
+.dropdown-divider {
+    margin-left: 25%;
+    margin-right: 25%;
+    border-color: black
+}
+
+
+.Backpanel {
+    width: 60%;
+    margin: 10px auto;
+    padding: 5%;
+    border: none;
+    border-radius: 5px;
+    background-color: cornflowerblue;
+    padding: 5%;
+
+
+}
+
+@media only screen and (max-width: 800px) {
+    .Backpanel {
+        width: 400px;
+        margin: auto;
+        border: none;
+        border-radius: 5px;
+        padding: 5%;
+        background-color: cornflowerblue;
+        padding: 5%;
+
+    }
+
+    .superbutton {
+        width:60%;
+        background-color: cornflowerblue;
+        margin: 10px auto;
+        color: #f5f5f5;
+        padding: 5px;
+        text-align: center;
+        border-radius: 10px;
+        border: none;
+        text-decoration: none;
+    }
+
+    .superbutton:hover {
+        width:60%;
+        background-color: rgb(54, 120, 243);
+        margin: 10px auto;
+        color: #f5f5f5;
+        padding: 5px;
+        text-align: center;
+        border-radius: 10px;
+        border: none;
+        text-decoration: none;
+    }
+}
+
+
+
+/* Index Page */
+.homeAppointments{
+    background-color: whitesmoke;
+    border-radius: 1ch;
+    margin:10px;
+    padding: 2ch;
+}
+
+.appointmentrow{
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.appointmentcolumn{
+    width: 100%;
+    height: 30vh;
+    margin: 0.1ch 0.1ch;
+}
+
+.mainAppointment{
+    width: 100%;
+    height: 100%;
+    border-radius: 1ch;
+    background-color: cornflowerblue;
+}
+
+.appointListItem{
+    background-color: cornflowerblue; 
+    display: flex;
+    justify-content: space-evenly;
+    height: 4vh;
+    margin: 0.5ch 0;
+    border-radius: 1ch;
+
+}
+
+.datacols{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+    border-radius: 2ch ;
+    margin: 1ch;
+    background-color: whitesmoke;
+}
+
+.datalist{
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+@media only screen and (max-width: 800px) {
+    .appointmentcolumn{
+        height: 20vh;
+        margin: 5px;
+    }
+
+    .mainAppointment{
+        width: 100%;
+        height: 100%;
+        border-radius: 20px;
+        background-color: corn;
+    }
+
+    .appointListItem{
+        justify-content: space-evenly;
+        width: 100%;
+    }
+    
+}
