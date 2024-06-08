@@ -707,7 +707,6 @@ def login(request):
         return responseHeadersModifier(response)
     
 
-
 def forgot_password(request):
     if request.method == 'POST':
         form = ForgotPasswordForm(request.POST)
@@ -715,22 +714,27 @@ def forgot_password(request):
             email = form.cleaned_data['email']
             # Generate OTP
             otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-            # Send OTP to user's email
-            send_mail(
-                'Password Reset OTP',
-                f'Your OTP for password reset is: {otp}',
-                settings.EMAIL_HOST_USER,
-                [email],
-                fail_silently=False,
-            )
-            # Store the OTP in session for verification later
-            request.session['otp'] = otp
-            request.session['email'] = email
-            return redirect('verify_otp')
+            
+            try:
+                # Send OTP to user's email
+                send_mail(
+                    'Password Reset OTP',
+                    f'Your OTP for password reset is: {otp}',
+                    settings.EMAIL_HOST_USER,
+                    [email],
+                    fail_silently=False,
+                )
+                # Store the OTP in session for verification later
+                request.session['otp'] = otp
+                request.session['email'] = email
+                return redirect('verify_otp')
+            except Exception as e:
+                # Handle email sending failure
+                form.add_error(None, 'There was an error sending the email. Please try again.')
+                print(f"Error sending email: {e}")
     else:
         form = ForgotPasswordForm()
     return render(request, 'HealthCentre/forgot_password.html', {'form': form})
-
 
 def verify_otp(request):
     if request.method == 'POST':
@@ -750,7 +754,8 @@ def verify_otp(request):
                 return render(request, 'HealthCentre/verify_otp.html', {'form': form, 'error': 'Invalid OTP. Please try again.'})
     else:
         form = VerifyOTPForm()
-    return render(request, 'HealthCentre/verify_otp.html', {'form': form})
+    # return render(request, 'HealthCentre/verify_otp.html', {'form': form})
+    return render(request, 'HealthCentre/forgot_password.html', {'form': form})
 
 
 def reset_password(request, email):
@@ -758,10 +763,11 @@ def reset_password(request, email):
         form = ResetPasswordForm(request.POST)
         if form.is_valid():
             new_password = form.cleaned_data['new_password']
+            passHash = passwordHasher(new_password)
             # Reset the password for the user with the provided email
             try:
                 user = Doctor.objects.get(email=email)
-                user.set_password(new_password)
+                user.passwordHash = passHash
                 user.save()
                 return HttpResponseRedirect(reverse("index"))
                 # return render(request, 'HealthCentre/password_reset_success.html')

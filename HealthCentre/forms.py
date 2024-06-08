@@ -49,6 +49,8 @@ class ResetPasswordForm(forms.Form):
         confirm_new_password = cleaned_data.get('confirm_new_password')
         if new_password != confirm_new_password:
             raise forms.ValidationError("The new passwords don't match.")
+        
+        
 # class TimeInput(forms.TimeInput, forms.DateInput):
 #     timeInputType = 'time'
 #     dateinputType = 'date'
