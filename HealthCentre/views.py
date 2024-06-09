@@ -706,35 +706,76 @@ def login(request):
         response = render(request,"HealthCentre/loginPortal.html")
         return responseHeadersModifier(response)
     
-
 def forgot_password(request):
+    
     if request.method == 'POST':
         form = ForgotPasswordForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            # Generate OTP
-            otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-            
-            try:
-                # Send OTP to user's email
-                send_mail(
-                    'Password Reset OTP',
-                    f'Your OTP for password reset is: {otp}',
-                    settings.EMAIL_HOST_USER,
-                    [email],
-                    fail_silently=False,
-                )
-                # Store the OTP in session for verification later
-                request.session['otp'] = otp
-                request.session['email'] = email
-                return redirect('verify_otp')
-            except Exception as e:
-                # Handle email sending failure
-                form.add_error(None, 'There was an error sending the email. Please try again.')
-                print(f"Error sending email: {e}")
+            docMail = Doctor.objects.filter(email=email)
+            # docMail = Doctor.objects.filter(email=email).first()
+            if email == docMail:
+                # Generate OTP
+                otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+                
+                try:
+                    # Send OTP to user's email
+                    send_mail(
+                        'Password Reset OTP',
+                        f'Your OTP for password reset is: {otp}',
+                        settings.EMAIL_HOST_USER,
+                        [email],
+                        fail_silently=False,
+                    )
+                    # Store the OTP in session for verification later
+                    request.session['otp'] = otp
+                    request.session['email'] = email
+                    return redirect('verify_otp')
+                except Exception as e:
+                    # Handle email sending failure
+                    form.add_error(None, 'There was an error sending the email. Please try again.')
+                    print(f"Error sending email: {e}")
+            else:
+                form.add_error('email', 'Please enter the valid email id')
     else:
         form = ForgotPasswordForm()
+    
     return render(request, 'HealthCentre/forgot_password.html', {'form': form})
+# def forgot_password(request,pk):
+#     docEmail = Doctor.objects.get(id=pk)
+#     docMailid= docEmail.email
+#     if request.method == 'POST':
+#         form = ForgotPasswordForm(request.POST)
+#         if form.is_valid():
+#             email = form.cleaned_data['email']
+
+#             if email == docMailid:
+#             # Generate OTP
+#                 otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+            
+#                 try:
+#                     # Send OTP to user's email
+#                     send_mail(
+#                         'Password Reset OTP',
+#                         f'Your OTP for password reset is: {otp}',
+#                         settings.EMAIL_HOST_USER,
+#                         [email],
+#                         fail_silently=False,
+#                     )
+#                     # Store the OTP in session for verification later
+#                     request.session['otp'] = otp
+#                     request.session['email'] = email
+#                     return redirect('verify_otp')
+#                 except Exception as e:
+#                 # Handle email sending failure
+#                     form.add_error(None, 'There was an error sending the email. Please try again.')
+#                     print(f"Error sending email: {e}")
+#                 else:
+#                     print("Please enter the valid email id")    
+        
+#     else:
+#         form = ForgotPasswordForm()
+#     return render(request, 'HealthCentre/forgot_password.html', {'form': form})
 
 def verify_otp(request):
     if request.method == 'POST':
