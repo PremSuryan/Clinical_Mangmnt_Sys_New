@@ -713,8 +713,16 @@ def forgot_password(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             docMail = Doctor.objects.filter(email=email)
+                    # Handle email sending failure
+            if not docMail.exists():        
+                form.add_error(None, 'This mail is not registered')
+                return render(request, 'HealthCentre/forgot_password.html', {'message': 'This email is not registered'})
+
+                    # print(f"Error sending email: {e}")
+            for doctremail in docMail:
+                docQuerymail = doctremail.email
             # docMail = Doctor.objects.filter(email=email).first()
-            if email == docMail:
+            if email == docQuerymail:
                 # Generate OTP
                 otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
                 
