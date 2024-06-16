@@ -2,9 +2,9 @@ body {
     background-color: #242424 !important;
 }
 
-.hideout {
+ .hideout {
     display: none;
-}
+} 
 
 .makeItFlex {
     display: flex;

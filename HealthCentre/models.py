@@ -62,6 +62,7 @@ class timeofday(models.Model):
         return "\ntimeoftheday :" + str(self.timeoftheday) + '\n\n'
     class Meta:
         db_table = 'healthcenter_timeofday'
+        
 class Prescription(models.Model):
     prescriptionText = models.CharField(max_length = 2000, default = "", db_column = 'prescriptiontext')
     prescribingDoctor = models.CharField(max_length= 2000, default= "", db_column = 'prescribingdoctor')
@@ -93,9 +94,10 @@ class Appointment(models.Model):
     appointmentpatient = models.CharField(max_length=2000, default = "")
     appointmentdoctor  = models.CharField(max_length=2000, default= "")
     AppointmentTimeStamp = models.DateTimeField(default = timezone.now, db_column = 'appointmenttimestamp')#auto_now_add = True 
+    status = models.BooleanField(default=False)
 #auto_now_add = True, 
     def __str__(self):
-        return "\nDoctorId :" + str(self.doctorPres) + "\nPatientId :" + str(self.patientPres) + "\nDoctor :" + str(self.appointmentdoctor) + "\n\nPatient" + str(self.appointmentpatient) +"\n\nDate :"+ str(self.date) + "\n\nTime :" + str(self.time) + "\n\nSubject :" + str(self.subject) + "\n\nnotes :" + str(self.notes) + "\n\n"
+        return "\nDoctorId :" + str(self.doctorPres) + "\nPatientId :" + str(self.patientPres) + "\nDoctor :" + str(self.appointmentdoctor) + "\n\nPatient" + str(self.appointmentpatient) +"\n\nDate :"+ str(self.date) + "\n\nTime :" + str(self.time) + "\n\nSubject :" + str(self.subject) + "\n\nnotes :" + str(self.notes) + "\n\nstatus :" + str(self.status)+"\n\n"
     class Meta:
         db_table = 'healthcentre_appointment'
 

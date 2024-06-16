@@ -91,11 +91,33 @@
                     </li>   
                 </ul>
             </div>
-            <div class="col datacols">Completed Appointments</div>
-        </div>
-        <div class="row">
-            <div class="col datacols">Revenue</div>
-            <div class="col datacols">Analytics</div>
+
+            <br>
+            <div class="col datacols">
+               <h6> Completed Appointments </h6> 
+               <ul class="container-fluid justify-content-center" id="LastAppointmentList">
+                {% for appointment in appointments %}
+                <li class="col-fluid-md" style="list-style: none;">
+                    <div class="appointListItem" id="listLastcontent">
+                        <div class="datalist listTime">{{ appointment.time }}</div>
+                        <div class="datalist listDate">{{ appointment.date }}</div>
+                        <div class="datalist listPatient">{{ appointment.patient }}</div>
+                        <div class="datalist listNotes">{{ appointment.notes }}</div>
+                        <div class="datalist listNotes completeButton">
+                            <button class="button" onclick="completeAppoint(this)">Completed</button>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            </div>
+                
+            <div class="col datacols">
+                Revenue
+            </div>
+            <div class="col datacols">
+                Analytics
+            </div>
         </div>
     </div>
 
@@ -222,6 +244,28 @@
 
     }
 
+    function completeAppoint(appointmentId) {
+                    // $isCompleted.find('button').click(function(appointmentId) {
+                // Optionally, send an AJAX request to the server to update the appointment status
+                $.ajax({
+                    // url: '/update_appointment_status/', // URL to your update endpoint
+                    url : "{% url 'updateDashboard' %}",
+                    type: 'POST',
+                    data: {
+                        id: appointmentId,
+                        status: true,
+                        csrfmiddlewaretoken: '{{ csrf_token }}' 
+                    },
+                    success: function(response) {
+                        console.log('Appointment status updated successfully.');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error updating appointment status:', error);
+                    }
+                });        
+                    } 
+
+
     $(document).ready(function() {
         function currentAppointment() {
             $.ajax({
@@ -255,7 +299,7 @@
 
                         
                         var curAppoints = data.curAppoints;
-                        
+                        console.log(curAppoints)
                         
                         var appointmentList = document.getElementById('appointmentList');
                         var appointListItem = document.getElementById('appointListItem');
@@ -298,11 +342,11 @@
                             appointmentList.innerHTML = '<li>No appointments available</li>';
                         }
                         var lastIncompleteAppoints = data.lastIncompleteAppoint;
-
+                        console.log(lastIncompleteAppoints)
                         var LastAppointmentList = document.getElementById('LastAppointmentList');
                         LastAppointmentList.innerHTML = '';
                         if (lastIncompleteAppoints != null) {
-                        lastIncompleteAppoints.forEach(function(lastAppoint){
+                        lastIncompleteAppoints.forEach(function(lastAppoint){ 
                             var formattedListTime = formatTime(lastAppoint.fields.time);
                             var formattedListDate = formatDate(lastAppoint.fields.date);
                             var $listItem = $('<li class="col-fluid-md" style="list-style: none;"></li>');
@@ -311,11 +355,21 @@
                             var $listDate = $('<div class="datalist listDate"></div>');
                             var $listPatient = $('<div class="datalist listPatient"></div>');
                             var $listNotes = $('<div class="datalist listNotes"></div>');
-                            var $isCompleted = $('<div class="datalist listNotes"><button class="button" onclick = "completeAppoint()">Completed</button></div>');
+                            var $isCompleted = $('<div class="datalist listNotes completeButton"><button class="button">Completed</button></div>');
+                            console.log(lastAppoint.id)
+                            console.log(lastAppoint.pk)
+
+                            $isCompleted.find('button').click(function() {
+                                completeAppoint(lastAppoint.pk); // Pass the correct appointment ID
+                            });
+
                             $listTime.text(formattedListTime);
                             $listDate.text(formattedListDate);
                             $listPatient.text(lastAppoint.fields.appointmentpatient);
                             $listNotes.text(lastAppoint.fields.notes);
+
+
+
                             $listContent.append($listTime, $listDate, $listPatient, $listNotes, $isCompleted);
                             $listItem.append($listContent);
                             console.log($listItem);
@@ -324,25 +378,196 @@
                     } else {
                         LastAppointmentList.innerHTML = 'no appointments';
                     }
-
-                    //$('#status').val(data.status);
-                   // $('#nextAppointment').empty();
-                    //if(data.nextFirstAppoint) {
-                   //     var nextAppoint = '<div class = "appointment">' +
-                     //       '<h6>' + appointment.appointTime + '</h6>' +
-                    //        '<p>' + appointment.appointDate + '</p>' +
-                    //        '<p>' + appointment.appointPatient + '</p>' +
-                       //     '<p>' + appointment.appointNotes + '</p>' +
-                     //       '</div>';
-                     //      $('#nextAppointment').append(nextAppoint);
-                    //}
-                    
-                }
-            });
+                    // $('.completeButton').on('click', function(appointmentId) {
+                // })
+            }
+        });
+    
         }
         currentAppointment();
 
         setInterval(currentAppointment, 5000);
     })
+
+
 </script>
 {% endblock %}
+
+
+
+<!-- $(document).ready(function() {
+    $('.completeButton').on('click', function() {
+        var $appointListItem = $(this).closest('.appointListItem');
+        // Extract data from the appointment item
+        var time = $appointListItem.find('.listTime').text();
+        var date = $appointListItem.find('.listDate').text();
+        var patient = $appointListItem.find('.listPatient').text();
+        var notes = $appointListItem.find('.listNotes').first().text();
+
+        // Remove the item from the current list
+        $appointListItem.closest('li').remove();
+
+        // Append the item to the Completed Appointments section
+        var completedItem = `
+            <div class="appointListItem completed">
+                <div class="datalist listTime">${time}</div>
+                <div class="datalist listDate">${date}</div>
+                <div class="datalist listPatient">${patient}</div>
+                <div class="datalist listNotes">${notes}</div>
+            </div>
+        `;
+        $('.col.datacols').append(completedItem); -->
+<!-- 
+ //         $(document).ready(function() {
+    //     function formatTime(rawTime) {
+    //         // Parse the time string into a Date object
+    //         var time = new Date('2000-01-01T' + rawTime + 'Z'); // Use a dummy date for parsing
+    //         var timeComponents = rawTime.split(':');
+    //         // Extract hours, minutes, and AM/PM from the parsed time
+    //         var hours = parseInt(timeComponents[0], 10);
+            
+    //         var minutes = parseInt(timeComponents[1], 10);
+            
+    //         var ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+    //         hours = hours % 12;
+    //         hours = hours ? hours : 12; // Handle midnight (0 hours)
+    //         hours = ('0' + hours).slice(-2);
+    //         minutes = ('0' + minutes).slice(-2);
+    //         // Construct the formatted time string
+    //         var formattedTime = hours + ':' + minutes + ' ' + ampm;
+        
+    //         return formattedTime;
+    //     }
+    
+    //     function formatDate(rawDate) {
+    //         var dateObject = new Date(rawDate);
+    //         var day = dateObject.getDate();
+    //         var monthIndex = dateObject.getMonth();
+    //         var year = dateObject.getFullYear();
+    //         var monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+    //                         'July', 'August', 'September', 'October', 'November', 'December'];
+    //         var monthName = monthNames[monthIndex];
+    //         var formattedDate = monthName + ' ' + day + ', ' + year;
+    
+    //         return formattedDate;
+    //     }
+    
+    //     function completeAppoint(appointmentId) {
+    //         // Optionally, send an AJAX request to the server to update the appointment status
+    //         $.ajax({
+    //             // url: '/update_appointment_status/', // URL to your update endpoint
+    //             url : "{% url 'updateDashboard' %}",
+    //             type: 'POST',
+    //             data: {
+    //                 id: appointmentId,
+    //                 status: true,
+    //                 csrfmiddlewaretoken: '{{ csrf_token }}' 
+    //             },
+    //             success: function(response) {
+    //                 console.log('Appointment status updated successfully.');
+    //                 currentAppointment(); // Refresh the appointment list
+    //             },
+    //             error: function(xhr, status, error) {
+    //                 console.error('Error updating appointment status:', error);
+    //             }
+    //         });
+    //     }
+    
+    //     function currentAppointment() {
+    //         $.ajax({
+    //             type : 'GET',
+    //             url : "{% url 'updateDashboard' %}",
+    //             dataType : 'json',
+    //             success : function(data) {
+    //                 var nextFirstAppoint = data.nextFirstAppoint;
+    //                 if (nextFirstAppoint != null) {
+    //                     var formattedTime = formatTime(nextFirstAppoint.fields.time);
+    //                     var formattedDate = formatDate(nextFirstAppoint.fields.date);
+    
+    //                     $('#appointDate').html(formattedDate);
+    //                     $('#appointTime').html(formattedTime);
+    //                     $('#appointPatient').val(nextFirstAppoint.fields.appointmentpatient);
+    //                     $('#appointNotes').val(nextFirstAppoint.fields.notes);
+    //                     $('#status').val(data.status);
+    //                 } else {
+    //                     $('#appointDate').html('');
+    //                     $('#appointTime').html('');
+    //                     $('#appointPatient').val('');
+    //                     $('#appointNotes').val('');
+    //                     $('#status').val('no more appointments today...');
+    //                 }
+    
+    //                 var curAppoints = data.curAppoints;
+    //                 var appointmentList = document.getElementById('appointmentList');
+    //                 var appointListItem = document.getElementById('appointListItem');
+    //                 var appointListContent = document.getElementById('listcontent');
+    //                 appointmentList.innerHTML = '';
+    
+    //                 console.log(curAppoints)
+    //                 var appointmentList = $('#appointmentList');
+    //                 appointmentList.empty();
+    //                 if (curAppoints !== null) {
+    //                     curAppoints.forEach(function(appoint){
+    //                         var formattedListTime = formatTime(appoint.fields.time);
+    //                         var formattedListDate = formatDate(appoint.fields.date);
+    //                         var $listItem = $('<li class="col-fluid-md" style="list-style: none;"></li>');
+    //                         var $listContent = $('<div class="appointListItem"></div>');
+    //                         var $listTime = $('<div class="datalist listTime"></div>');
+    //                         var $listDate = $('<div class="datalist listDate"></div>');
+    //                         var $listPatient = $('<div class="datalist listPatient"></div>');
+    //                         var $listNotes = $('<div class="datalist listNotes"></div>');
+    //                         var $status = $('<div class="datalist status"></div>');
+                            
+    //                         $listTime.text(formattedListTime);
+    //                         $listDate.text(formattedListDate);
+    //                         $listPatient.text(appoint.fields.appointmentpatient);
+    //                         $listNotes.text(appoint.fields.notes);
+    //                         $status.text(appoint.fields.status);
+    
+    //                         $listContent.append($listTime, $listDate, $listPatient, $listNotes, $status);
+    //                         $listItem.append($listContent);
+    //                         appointmentList.append($listItem);
+    //                     });
+    //                 } else {
+    //                     appointmentList.html('<li>No appointments available</li>');
+    //                 }
+    
+    //                 var lastIncompleteAppoints = data.lastIncompleteAppoint;
+    //                 var LastAppointmentList = $('#LastAppointmentList');
+    //                 LastAppointmentList.empty();
+    //                 if (lastIncompleteAppoints != null) {
+    //                     lastIncompleteAppoints.forEach(function(lastAppoint){ 
+    //                         var formattedListTime = formatTime(lastAppoint.fields.time);
+    //                         var formattedListDate = formatDate(lastAppoint.fields.date);
+    //                         var $listItem = $('<li class="col-fluid-md" style="list-style: none;"></li>');
+    //                         var $listContent = $('<div class="appointListItem"></div>');
+    //                         var $listTime = $('<div class="datalist listTime"></div>');
+    //                         var $listDate = $('<div class="datalist listDate"></div>');
+    //                         var $listPatient = $('<div class="datalist listPatient"></div>');
+    //                         var $listNotes = $('<div class="datalist listNotes"></div>');
+    //                         var $isCompleted = $('<div class="datalist listNotes completeButton"><button class="button">Completed</button></div>');
+    //                         console.log($listPatient)
+    //                         $listTime.text(formattedListTime);
+    //                         $listDate.text(formattedListDate);
+    //                         $listPatient.text(lastAppoint.fields.appointmentpatient);
+    //                         $listNotes.text(lastAppoint.fields.notes);
+    
+    //                         $isCompleted.getElementById('button').click(function() {
+    //                             completeAppoint(lastAppoint.fields.id); // Pass the correct appointment ID
+    //                         });
+    
+    //                         $listContent.append($listTime, $listDate, $listPatient, $listNotes, $isCompleted);
+    //                         $listItem.append($listContent);
+    //                         LastAppointmentList.append($listItem);
+    //                     });
+    //                 } else {
+    //                     LastAppointmentList.html('no appointments');
+    //                 }
+    //             }
+    //         });
+    //     }
+    
+    //     currentAppointment();
+    //     setInterval(currentAppointment, 5000);
+    // });
+     -->

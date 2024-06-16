@@ -36,7 +36,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 from .forms import ForgotPasswordForm, VerifyOTPForm, ResetPasswordForm
-
+from django.views.decorators.csrf import csrf_exempt
 
 if ('runserver' in sys.argv):
     from .Whatsapptestfile import whatsappApi, openWhatsapp, whatsappApiEdit, whatsappMedia, whatsappApiDoc
@@ -215,69 +215,86 @@ def index(request):
         
         return render(request, "HealthCentre/index.html", context)
     
+@csrf_exempt    
 def updateDashboard(request):
     # if request.GET.get('currentAppointment') == None:
-        currentDate = datetime.now().date()
-        curTime = datetime.now().time()
-        docName = request.session['Name']
-        currentAppointments = Appointment.objects.filter(date__gte=currentDate, time__gte= curTime, appointmentdoctor = docName).order_by('time')
-        incompleteAppointments = Appointment.objects.filter(date__lte=currentDate, time__lte= curTime, appointmentdoctor = docName).order_by('time')
-        nextAppointmentData = []
-        # for currentAppointment in currentAppointments:
-        #     appointDate = currentAppointment.date
-        #     appointTime = currentAppointment.time
-        #     appointPatient = currentAppointment.appointmentpatient
-        #     appointNotes = currentAppointment.notes
-        #     nextAppointmentData.append({
-        #         'appointDate' : appointDate,
-        #         'appointTime' : appointTime,
-        #         'appointPatient' : appointPatient,
-        #         'appointNotes' : appointNotes,
-                
-        #     })
-        if currentAppointments:
+    if request.method =='POST':
+        appointmntStatus = request.POST.get('status')
+        appointmntId = request.POST.get('id')
+        appointmentPat = Appointment.objects.get(pk=appointmntId)
+
+        if appointmentPat.status == False:
+            try:
+                appointmentPat.status = True
+                appointment = Appointment.objects.get(time=time, date=date)
+                appointment.status = 'completed'
+                appointment.save()
+                return render(request, 'index.html', {'appointment': appointment})
+            except Appointment.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'Appointment not found'})
+
+    currentDate = datetime.now().date()
+    curTime = datetime.now().time()
+    docName = request.session['Name']
+    currentAppointments = Appointment.objects.filter(date__gte=currentDate, time__gte= curTime, appointmentdoctor = docName).order_by('time')
+    incompleteAppointments = Appointment.objects.filter(date__lte=currentDate, time__lte= curTime, appointmentdoctor = docName,status=False).order_by('time')
+    completedAppointments = Appointment.objects.filter(date__lte=currentDate, time__lte= curTime, appointmentdoctor = docName,status=True).order_by('time')
+    nextAppointmentData = []
+    # for currentAppointment in currentAppointments:
+    #     appointDate = currentAppointment.date
+    #     appointTime = currentAppointment.time
+    #     appointPatient = currentAppointment.appointmentpatient
+    #     appointNotes = currentAppointment.notes
+    #     nextAppointmentData.append({
+    #         'appointDate' : appointDate,
+    #         'appointTime' : appointTime,
+    #         'appointPatient' : appointPatient,
+    #         'appointNotes' : appointNotes,
             
-            nextFirstAppoint = currentAppointments.first()
-            nextAppointmentData = serialize('json' ,currentAppointments[1:])
-            status = "There are few more appointments today.."
-            nextFirstAppointData = serialize('json', [nextFirstAppoint])[1:-1] if nextFirstAppoint else None
-            data = {
-                'lastIncompleteAppoint' : None,
-                'nextFirstAppoint' : json.loads(nextFirstAppointData),
-                'curAppoints' : json.loads(nextAppointmentData),
-                'status' : status
-            }
-            
-        else:    
-            
-            status = "There are no more appointments today.!."
-            data = {
-                'lastIncompleteAppoint' : None,
-                'nextFirstAppoint' : None,
-                'curAppoints' : None,
-               'status' : status
-            }
-        if incompleteAppointments:
-            latestIncompleteAppoint = incompleteAppointments.first()
-            
-            lastIncompleteAppoint = serialize('json',incompleteAppointments)
-            
-            data = {
-                'lastIncompleteAppoint' : json.loads(lastIncompleteAppoint),
-                'nextFirstAppoint' : None,
-                'curAppoints' : None,
-                'status' : None
-            }
-            
-            
+    #     })
+    if currentAppointments:
+        
+        nextFirstAppoint = currentAppointments.first()
+        nextAppointmentData = serialize('json' ,currentAppointments[1:])
+        status = "There are few more appointments today.."
+        nextFirstAppointData = serialize('json', [nextFirstAppoint])[1:-1] if nextFirstAppoint else None
+        data = {
+            'lastIncompleteAppoint' : None,
+            'nextFirstAppoint' : json.loads(nextFirstAppointData),
+            'curAppoints' : json.loads(nextAppointmentData),
+            'status' : status
+        }
+        
+    else:    
+        
+        status = "There are no more appointments today.!."
+        data = {
+            'lastIncompleteAppoint' : None,
+            'nextFirstAppoint' : None,
+            'curAppoints' : None,
+            'status' : status
+        }
+    if incompleteAppointments:
+        latestIncompleteAppoint = incompleteAppointments.first()
+        
+        lastIncompleteAppoint = serialize('json',incompleteAppointments)
+        
+        data = {
+            'lastIncompleteAppoint' : json.loads(lastIncompleteAppoint),
+            'nextFirstAppoint' : None,
+            'curAppoints' : None,
+            'status' : None
+        }
         
         
-        # print(data)
-        # data = dashAppointData
+
+
+    # print(data)
+    # data = dashAppointData
     # Editing response headers so as to ignore cached versions of pages
-        # response = render(request,"HealthCentre/index.html")
-        return JsonResponse(data)
-        # return render(request, "HealthCentre/index.html", context)
+    # response = render(request,"HealthCentre/index.html")
+    return JsonResponse(data)
+# return render(request, "HealthCentre/index.html", context)
         # return render(request,"HealthCentre/index.html")
 
 def register(request):

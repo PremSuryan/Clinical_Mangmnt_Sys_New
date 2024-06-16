@@ -2,9 +2,9 @@ body {
     background-color: #242424 !important;
 }
 
-.hideout {
-    visibility: visible;
-}
+ /* .hideout {
+    display: none;
+}  */
 
 .makeItFlex {
     display: flex;
@@ -18,10 +18,10 @@ body {
     padding: 0;
 }
 
-.hide {
-    visibility:visible;
-    /* visibility: none; */
-}
+/* .hide {
+    display: block;
+    
+} */
 
 .navstyle {
     background-color: whitesmoke;
@@ -280,10 +280,10 @@ body {
 
 
 
-.hidein {
+/* .hidein {
     visibility: none;
     display: none;
-}
+} */
 
 
 
@@ -431,6 +431,27 @@ body {
     margin: 1ch;
     background-color: whitesmoke;
 }
+
+/* .datacols-revenue{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+    border-radius: 2ch ;
+    margin: 1ch;
+    background-color: whitesmoke;
+}
+
+.datacols-analytics{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+    border-radius: 2ch ;
+    margin: 1ch;
+    background-color: whitesmoke;
+} */
+
 
 .datalist{
     height: 100%;
