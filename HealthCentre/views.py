@@ -225,11 +225,13 @@ def updateDashboard(request):
 
         if appointmentPat.status == False:
             try:
-                appointmentPat.status = True
-                appointment = Appointment.objects.get(time=time, date=date)
-                appointment.status = 'completed'
-                appointment.save()
-                return render(request, 'index.html', {'appointment': appointment})
+                appointPat = Appointment.objects.get(pk=appointmntId)
+                appointPat.status = True
+
+                if appointPat.status == True : 
+                    appointPat.status = True
+                    appointPat.save()
+                    return render(request, 'index.html', {'appointments': appointPat})
             except Appointment.DoesNotExist:
                 return JsonResponse({'status': 'error', 'message': 'Appointment not found'})
 
