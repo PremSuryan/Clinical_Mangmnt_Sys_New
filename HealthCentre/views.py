@@ -231,7 +231,7 @@ def updateDashboard(request):
                 if appointPat.status == True : 
                     appointPat.status = True
                     appointPat.save()
-                    return render(request, 'index.html', {'appointments': appointPat})
+                    return render(request, "HealthCentre/index.html", {'appointment': appointPat})
             except Appointment.DoesNotExist:
                 return JsonResponse({'status': 'error', 'message': 'Appointment not found'})
 
@@ -1543,15 +1543,29 @@ def createTimeline(request):
                 
                 try:
                     prescriptionData = Prescription.objects.filter(patient_id = selectedPatientID).order_by('timestamp')
+                    # prescriptionDataNew = Prescription.objects.get(prescribingPatient="Prem Suryan")
+
+                    for presData in prescriptionData:
+                        presmed = presData.medicine.all()
+                        padMedSess = presData.MornAftNight.all()          
+
+                        
                 except Prescription.DoesNotExist :
                     for singleprescription in prescriptionData:
                         singleprescription = None
+
+                        
+                    else:
+                        prescriptionData = None 
+
                 doctorSpecific = Patient.objects.filter(doctorname = request.session['Name']).order_by('name')
+                
                 context = {
                     "patients" : doctorSpecific,
                     "appointmentData" : appointmentData,
-                    "prescriptionData" : prescriptionData,     
-                    "patientName" : selectedPatient.name               
+                    "prescriptionData" : prescriptionData, 
+                    "presmed" : presmed,     
+                    "padMedSess" : padMedSess              
                 }
                 response = render(request, "HealthCentre/timeline.html", context)
                 return responseHeadersModifier(response)

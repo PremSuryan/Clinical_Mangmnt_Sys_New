@@ -210,20 +210,27 @@ body {
           
       </div>
       {% endfor %}
-      {% comment %} {% for prescription in prescriptionData %}
+      {% for prescription in prescriptionData %}
 
         <div class="timeline">
           <div class="container right">
-            <div class="content">
-              <!-- <div class="timelineContent"> -->
-                <h6>{{ prescription.medicine }}</h6>
+            <div class="content"name="patMed">
+              <div class="timelineContent">
+                <!-- <h6>{{ patMed }}</h6> -->
                 <h6>{{ prescription.timestamp }}</h6>
-                <!-- <h6>{{ prescription. }}</h6> -->
-              <!-- </div> -->
+                {% for med in presmed %}
+                        <p>Medicine Name: {{ med.medicinename }}</p>
+                        <p>Before/After: {{ med.beforeafter }}</p>
+                {% endfor %}
+                <!-- <h6>{{ presmed }}</h6> -->
+                <!-- <h6>{{ padMedSess }}</h6> -->
+
+              </div>
           </div>
           </div>
         </div>
-          {% endfor %} {% endcomment %}
+          {% endfor %} 
+
       </form>
       
       <!-- <div class="timeline"> -->
