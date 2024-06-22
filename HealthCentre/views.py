@@ -1211,15 +1211,21 @@ rowCount = 0
 additionalRowData ={}
 selectedMedicineID = []
 selectedSessionID = []
+@csrf_exempt    
 def createNewMedicine(request):
     if request.method == "POST":
-        newMedicine = request.POST["NewmedicineName"]
-        befAft = request.POST["befAftFood"]
+        print(request.POST)
+        newMedicine = request.POST.get("NewmedicineName")
+        befAft = request.POST.get("befAftFood")
         
         medicine = Medicine(medicinename = newMedicine, beforeafter = befAft, morning = "0", afternoon = "0", night = "0")
         medicine.save()
-    response = HttpResponseRedirect(reverse('doctorprofile'))
-    return responseHeadersModifier(response)
+        data ={
+            "newMedicine" :newMedicine,
+            "befAft": befAft
+        }
+    # response = HttpResponseRedirect(reverse('doctorprofile'))
+    return JsonResponse(data)
 
 def addingSessionData(request, SelectedSessionValue):
     try:
@@ -1567,6 +1573,7 @@ def createTimeline(request):
                     "presmed" : presmed,     
                     "padMedSess" : padMedSess              
                 }
+                
                 response = render(request, "HealthCentre/timeline.html", context)
                 return responseHeadersModifier(response)
                 # return JsonResponse(data)
@@ -1994,6 +2001,21 @@ def countPrescriptionRows(request):
            'sessionIsSelected' : sessionIsSelected
        }
        return JsonResponse(data)
+
+@csrf_exempt    
+def presMedAjaxData(request):
+    if request.method =='POST':
+        # patObjId = Prescription.objects.get(pk=PatientSelected)
+        medicineAjax = request.POST.get('medicineIsSelected')
+        sessionAjax = request.POST.get('sessionIsSelected')
+
+        data = {
+            "medicineAjax":medicineAjax,
+            "sessionAjax":sessionAjax
+        }
+
+        return JsonResponse(data)
+        
 
 def generatePDF(request):
 

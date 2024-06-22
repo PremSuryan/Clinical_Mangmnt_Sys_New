@@ -42,24 +42,24 @@ Clinical-Prescription
         <!-- </li> -->
         <button class="superbutton" id="generatePdfFile"type ="submit" >Print/Save pdf</button>
 
-        <button      class=" superbutton"        id="Addmed" type ="button" >Add new medicine</button>
+        <button      class=" superbutton" id="Addmed" type ="button" >Add new medicine</button>
         <button id="closeaddmed" type="button" ><strong>x</strong></button>
 
         </div> 
     <!-- href="{% url 'generatePDF' %}" -->
           
         <!-- <button type="submit" name="writeNewPrescription" class="btn btn-warning btn-lg" action="{% url 'doctorprofile' %}">Write new prescription</button> -->
-        <form method = "post" id = "addnewmedicineform" action = "{% url 'createNewMedicine' %}" >
+        <!-- <form method = "post" id = "addnewmedicineform" action = "{% url 'createNewMedicine' %}" > -->
           {% csrf_token %}
           <div id = "addnewmedicine" class = 'hideout' >
-          <input name="NewmedicineName" placeholder="Medicine Name"></input>
+          <input id = "NewmedicineName" name="NewmedicineName" placeholder="Medicine Name"></input>
           <select name="befAftFood" id ="befAftFood">
             <option>Before</option>
             <option>After</option>
           </select>
-          <button id = "medsubmit" type="submit" class="btn btn-warning first">Add</button>
+          <button id = "medsubmit" type="submit" class="btn btn-warning first" onclick="medAjaxData()">Add</button>
         </div>
-        </form>
+        <!-- </form> -->
       <br>
       <li class="dropdown-divider" style="margin-left:25%;margin-right:25%;border-color:black"></li>
       <br>
@@ -193,7 +193,7 @@ Clinical-Prescription
                     <option value="">Select Medicine</option>
               {% for prescMedicine in prescMedicines %}
                     
-                    <option value="{{ prescMedicine.medicinename }}" >{{ prescMedicine.medicinename }}</option>
+                    <option id ="jsonmedData" value="{{ prescMedicine.medicinename }}" >{{ prescMedicine.medicinename }}</option>
                     <a class="button" href ="{% url 'editAppointments' 1   %}">Edit</a>
                       
               {% endfor %}
@@ -290,10 +290,11 @@ Clinical-Prescription
       
       
       <script>
-        //function addNewMedicine(){
+        //function addNewMedicine(){              
           var med = document.getElementById('addnewmedicine'); // TextBox for Medicine Name And Bef Afr Food
           var Addmed = document.getElementById('Addmed'); // Add New Medicine
           console.log('log',  med.className);
+
           Addmed.addEventListener("click", function () {
           med.className = "hide";
           //if (med.className == "hidein"){
@@ -313,8 +314,46 @@ Clinical-Prescription
           });
         // };
       </script>
+
       <script>
-        
+
+      function medAjaxData() {
+          // $('#medsubmit').click(function() {
+          var medId = document.getElementById("NewmedicineName");
+          var newMedicineName = medId.value;
+          var befAftFood = $('#befAftFood').val();
+
+          console.log('New Medicine Name:', newMedicineName);
+        console.log('Before/After Food:', befAftFood);
+
+          $.ajax({
+            url : "{% url 'createNewMedicine' %}",
+            method: "POST",
+            data: {
+                  "NewmedicineName": newMedicineName,
+                  "befAftFood": befAftFood,
+                    csrfmiddlewaretoken: '{{ csrf_token }}' 
+                    },
+                    success: function(data) {
+                      if (data.newMedicine) {
+                    $('#SelectedMedicine').append(
+                        '<option value="' + data.newMedicine + '">' + data.newMedicine + '</option>'
+                    );
+                    console.log('Prescription Medicine added successfully:', data.newMedicine);
+                }
+                      // $('#jsonmedData').html(data.newMedicine);
+                      // $('#beforeAfter').html(data.befAft);
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error in sending prescription medicine data:', error);
+                    }
+                }); 
+              }
+
+      </script>
+      <script>
+
 
         function sleep(milliseconds) {
           const date = Date.now();
@@ -506,9 +545,7 @@ Clinical-Prescription
           
         });
         
-    
-    
-    
+      
         $('#generatePdfFile').click(function() {
             var pdfGenerator = $(this).val();
             //confUser = window.confirm("save as pdf?");
@@ -528,8 +565,6 @@ Clinical-Prescription
             sleep(2000);
           //}
           })
-        
-          
           
         
           $('#selectedPatient').change(function() {
@@ -623,5 +658,7 @@ Clinical-Prescription
               
             });
           });
+
+
       </script>
       {% endblock %}
