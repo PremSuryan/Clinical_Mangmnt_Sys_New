@@ -42,7 +42,8 @@ class VerifyOTPForm(forms.Form):
 class ResetPasswordForm(forms.Form):
     new_password = forms.CharField(label='New Password', widget=forms.PasswordInput)
     confirm_new_password = forms.CharField(label='Confirm New Password', widget=forms.PasswordInput)
-    
+    email = forms.EmailField(label="Email")
+
     def clean(self):
         cleaned_data = super().clean()
         new_password = cleaned_data.get('new_password')
