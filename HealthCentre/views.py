@@ -737,7 +737,6 @@ def forgot_password(request):
     request.session['doctorOtp'] = False
 
     if request.method == "POST":
-        # request.session['doctorOtp'] = True
         email = request.POST['email']
         request.session['otpEmail']= email
         
