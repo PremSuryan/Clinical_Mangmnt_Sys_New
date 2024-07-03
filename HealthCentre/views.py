@@ -38,7 +38,7 @@ import random
 from .forms import ForgotPasswordForm, VerifyOTPForm, ResetPasswordForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
-
+from django.utils.crypto import get_random_string
 
 if ('runserver' in sys.argv):
     from .Whatsapptestfile import whatsappApi, openWhatsapp, whatsappApiEdit, whatsappMedia, whatsappApiDoc
@@ -728,241 +728,97 @@ def login(request):
         return responseHeadersModifier(response)
     
 
-    
-# def forgot_password(request):
-    
-#     if request.method == 'POST':
-#         form = ForgotPasswordForm(request.POST)
-#         if form.is_valid():
-#             email = form.cleaned_data['email']
-#             docMail = Doctor.objects.filter(email=email)
-#                     # Handle email sending failure
-#             if not docMail.exists():        
-#                 form.add_error(None, 'This mail is not registered')
-#                 return render(request, 'HealthCentre/forgot_password.html', {'message': 'This email is not registered'})
-
-#                     # print(f"Error sending email: {e}")
-#             for doctremail in docMail:
-#                 docQuerymail = doctremail.email
-#             # docMail = Doctor.objects.filter(email=email).first()
-#             if email == docQuerymail:
-#                 # Generate OTP
-#                 otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-                
-#                 try:
-#                     # Send OTP to user's email
-#                     send_mail(
-#                         'Password Reset OTP',
-#                         f'Your OTP for password reset is: {otp}',
-#                         settings.EMAIL_HOST_USER,
-#                         [email],
-#                         fail_silently=False,
-#                     )
-#                     # Store the OTP in session for verification later
-#                     request.session['otp'] = otp
-#                     request.session['email'] = email
-#                     return redirect('verify_otp')
-#                 except Exception as e:
-#                     # Handle email sending failure
-#                     form.add_error(None, 'There was an error sending the email. Please try again.')
-#                     print(f"Error sending email: {e}")
-#             else:
-#                 form.add_error('email', 'Please enter the valid email id')
-#     else:
-#         form = ForgotPasswordForm()
-    
-#     return render(request, 'HealthCentre/forgot_password.html', {'form': form})
-
-# def verify_otp(request):
-#     if request.method == 'POST':
-#         form = VerifyOTPForm(request.POST)
-#         if form.is_valid():
-#             user_otp = form.cleaned_data['otp']
-#             stored_otp = request.session.get('otp')
-#             email = request.session.get('email')
-#             if user_otp == stored_otp:
-#                 # If OTP matches, proceed with password reset
-#                 # Clear OTP and email from session
-#                 del request.session['otp']
-#                 del request.session['email']
-#                 return redirect('reset_password')
-#             else:
-#                 # If OTP doesn't match, show error message
-#                 return render(request, 'HealthCentre/forgot_password.html', {'form': form,'error': 'Invalid OTP. Please try again.'})
-#     else:
-#         form = VerifyOTPForm()
-#     # return render(request, 'HealthCentre/verify_otp.html', {'form': form})
-#     return render(request, 'HealthCentre/forgot_password.html', {'form': form})
-
-
 global_email = None
 stored_otp = None
 
-# def forgot_password(request):
-#     global global_email  # Use the global keyword to modify the global variable
-
-#     if request.method == 'POST':
-#         form = ForgotPasswordForm(request.POST)
-#         if form.is_valid():
-#             email = form.cleaned_data['email']
-#             docMail = Doctor.objects.filter(email=email)
-
-#             if not docMail.exists():
-#                 # form.add_error(None,'This email is not registered')
-#                 return render(request, 'HealthCentre/forgot_password.html', {'form': form,'message':'This email is not registered,Please confirm your mail Id'})
-
-#             for doctremail in docMail:
-#                 docQuerymail = doctremail.email
-
-#             if email == docQuerymail:
-#                 # Generate OTP
-#                 otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-                
-#                 try:
-#                     # Send OTP to user's email
-#                     send_mail(
-#                         'Password Reset OTP',
-#                         f'Your OTP for password reset is: {otp}',
-#                         settings.EMAIL_HOST_USER,
-#                         [email],
-#                         fail_silently=False,
-#                     )
-#                     # Store the OTP in session for verification later
-#                     request.session['otp'] = otp
-#                     global_email = email  # Set the global email variable
-#                     return redirect('verify_otp')
-#                 except Exception as e:
-#                     form.add_error(None, 'There was an error sending the email. Please try again.')
-#                     print(f"Error sending email: {e}")
-#             else:
-#                 form.add_error('email', 'Please enter a valid email id')
-#     else:
-#         form = ForgotPasswordForm()
-    
-#     return render(request, 'HealthCentre/forgot_password.html', {'form': form})
-
 @csrf_exempt
 def forgot_password(request):
-    global global_email  # Use the global keyword to modify the global variable
+    global global_email
+    request.session['doctorOtp'] = False
 
-    if request.method == 'POST':
-        form = ForgotPasswordForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            docMail = Doctor.objects.filter(email=email)
+    if request.method == "POST":
+        # request.session['doctorOtp'] = True
+        email = request.POST['email']
+        request.session['otpEmail']= email
+        
+        try:
+            doctor = Doctor.objects.get(email=email)
 
-            if not docMail.exists():
-                return JsonResponse({'success': False, 'message': 'This email is not registered'}, status=400)
+            # if not doctor.exists():
+                # form.add_error(None,'This email is not registered')
+                # return render(request, 'HealthCentre/forgot_password.html', {'message':'This email is not registered,Please confirm your mail Id'})
 
-            for doctremail in docMail:
-                docQuerymail = doctremail.email
+            otp = get_random_string(length=6, allowed_chars='0123456789')
+            
+            # Save the OTP to the session or send it to the doctor's email
+            request.session['otp'] = otp  # Save OTP to session (or use any other method to store it)
+            
+            # Send OTP to the email
+            send_mail(
+                'Your OTP Code',
+                f'Your OTP code is {otp}',
+                'your_email@example.com',
+                [email],
+                fail_silently=False,
+            )
+            
+            return render(request, 'HealthCentre/forgot_password.html', {'message': 'Otp has send to your Email, Please check.'})
 
-            if email == docQuerymail:
-                # Generate OTP
-                otp = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-                
-                try:
-                    # Send OTP to user's email
-                    send_mail(
-                        'Password Reset OTP',
-                        f'Your OTP for password reset is: {otp}',
-                        settings.EMAIL_HOST_USER,
-                        [email],
-                        fail_silently=False,
-                    )
-                    # Store the OTP in session for verification later
-                    request.session['otp'] = otp
-                    global_email = email  # Set the global email variable
-                    return JsonResponse({'success': True})
-                except Exception as e:
-                    print(f"Error sending email: {e}")
-                    return JsonResponse({'success': False, 'message': 'There was an error sending the email. Please try again.'}, status=500)
-            else:
-                return JsonResponse({'success': False, 'message': 'Please enter a valid email id'}, status=400)
-        else:
-            return JsonResponse({'success': False, 'message': 'Invalid form data'}, status=400)
+        except Doctor.DoesNotExist:
+            return render(request, 'HealthCentre/forgot_password.html', {'message': 'Email does not exist.'})
+
     else:
-        form = ForgotPasswordForm()
-        return render(request, 'HealthCentre/forgot_password.html', {'form': form})
-    
+        return render(request, 'HealthCentre/forgot_password.html')
+
 
 def verify_otp(request):
-    global global_email  # Use the global keyword to access the global variable
+    global global_email
     global stored_otp
-    
+
+    request.session['doctorOtp'] = False
+
     if request.method == 'POST':
-        form = VerifyOTPForm(request.POST)
-        if form.is_valid():
-            user_otp = form.cleaned_data['otp']
-            stored_otp = request.session.get('otp')
+        user_otp = request.POST['otp']
+        stored_otp =  request.session['otp']
 
-            if user_otp == stored_otp:
-                # If OTP matches, proceed with password reset
-                # Clear OTP from session
-                del request.session['otp']
-                return redirect('reset_password')
-            else:
-                # If OTP doesn't match, show error message
-                return render(request, 'HealthCentre/forgot_password.html', {'form': form, 'error': 'Invalid OTP. Please try again.'})
+        if user_otp == stored_otp:
+            request.session['doctorOtp'] = True
+
+            # If OTP matches, proceed with password reset
+            # Clear OTP from session
+            # del request.session['otp']
+            request.session['otp'] = ''
+            
+            return render(request, 'HealthCentre/forgot_password.html')
+        else:
+            request.session['doctorOtp'] = False
+            # If OTP doesn't match, show error message
+            return render(request, 'HealthCentre/forgot_password.html', {'error': 'Invalid OTP. Please try again.'})
     else:
-        form = VerifyOTPForm()
-    
-    return render(request, 'HealthCentre/forgot_password.html', {'form': form, 'stored_otp': stored_otp})
+        request.session['doctorOtp'] = False
+        return render(request, 'HealthCentre/forgot_password.html')
 
 
-@csrf_exempt
 def reset_password(request):
     global global_email  # Use the global keyword to access the global variable
 
     if request.method == 'POST':
-        form = ResetPasswordForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            new_password = form.cleaned_data['new_password']
-            hashed_password = passwordHasher(new_password)  # Use Django's make_password function to hash the password
+        email = request.session['otpEmail']
+        new_password = request.POST['new_password']
+        hashed_password = passwordHasher(new_password)  # Use Django's make_password function to hash the password
+        try:
+            user = Doctor.objects.get(email=email)
+            user.passwordHash = hashed_password  # Ensure you're setting the correct field in your model
+            user.save()
+            global_email = None  # Clear the global email variable after successful reset
 
-            try:
-                user = Doctor.objects.get(email=global_email)
-                user.passwordHash = hashed_password  # Ensure you're setting the correct field in your model
-                user.save()
-                global_email = None  # Clear the global email variable after successful reset
-                login_url = reverse('login')
-                # return JsonResponse({'success': True, 'redirect_url': login_url})
-                return HttpResponseRedirect(reverse("login"))
-            except Doctor.DoesNotExist:
+            return HttpResponseRedirect(reverse("login"))
+        except Doctor.DoesNotExist:
                 # Handle case where user doesn't exist
-                return JsonResponse({'success': False, 'message': 'No user found with this email address.'}, status=404)
-        else:
-            return JsonResponse({'success': False, 'message': 'Invalid form data'}, status=400)
+            return render(request, 'HealthCentre/forgot_password.html',{'message' : 'Doesnot Exist'})    
     else:
-        form = ResetPasswordForm(initial={'email': global_email})  # Prefill email in the form
-        return render(request, 'HealthCentre/forgot_password.html', {'form': form, 'email': global_email})
 
-
-# def reset_password(request):
-#     global global_email  # Use the global keyword to access the global variable
-
-#     if request.method == 'POST':
-#         form = ResetPasswordForm(request.POST)
-#         if form.is_valid():
-#             email = form.cleaned_data['email']
-#             new_password = form.cleaned_data['new_password']
-#             hashed_password = passwordHasher(new_password)  # Use Django's make_password function to hash the password
-#             print(hashed_password)
-#             try:
-#                 user = Doctor.objects.get(email=global_email)
-#                 user.passwordHash = hashed_password  # Ensure you're setting the correct field in your model
-#                 user.save()
-#                 global_email = None  # Clear the global email variable after successful reset
-
-#                 return HttpResponseRedirect(reverse("login"))
-#             except Doctor.DoesNotExist:
-#                 # Handle case where user doesn't exist
-#                 form.add_error('email', 'No user found with this email address.')
-#     else:
-#         form = ResetPasswordForm(initial={'email': global_email})  # Prefill email in the form
-
-#     return render(request, 'HealthCentre/forgot_password.html', {'form': form, 'email': global_email})
+        return render(request, 'HealthCentre/forgot_password.html')
 
 
 def admin(request):
