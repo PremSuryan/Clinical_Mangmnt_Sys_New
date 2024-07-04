@@ -797,21 +797,29 @@ def verify_otp(request):
         request.session['doctorOtp'] = False
         return render(request, 'HealthCentre/forgot_password.html')
 
-
+    
 def reset_password(request):
     global global_email  # Use the global keyword to access the global variable
 
     if request.method == 'POST':
         email = request.session['otpEmail']
         new_password = request.POST['new_password']
+        confirm_new_password = request.POST['confirm_new_password']
         hashed_password = passwordHasher(new_password)  # Use Django's make_password function to hash the password
         try:
-            user = Doctor.objects.get(email=email)
-            user.passwordHash = hashed_password  # Ensure you're setting the correct field in your model
-            user.save()
-            global_email = None  # Clear the global email variable after successful reset
+            if new_password == confirm_new_password:    
+                user = Doctor.objects.get(email=email)
+                exitingPasswrd = user.passwordHash
 
-            return HttpResponseRedirect(reverse("login"))
+                if exitingPasswrd == hashed_password:
+                    return render(request, 'HealthCentre/forgot_password.html',{'message' : 'Please try with diferent password'}) 
+
+                else:    
+                    user.passwordHash = hashed_password  # Ensure you're setting the correct field in your model
+                    user.save()
+                    global_email = None  # Clear the global email variable after successful reset
+                    return HttpResponseRedirect(reverse("login"))   
+   
         except Doctor.DoesNotExist:
                 # Handle case where user doesn't exist
             return render(request, 'HealthCentre/forgot_password.html',{'message' : 'Doesnot Exist'})    
