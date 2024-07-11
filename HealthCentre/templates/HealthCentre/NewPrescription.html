@@ -50,16 +50,20 @@ Clinical-Prescription
           
         <!-- <button type="submit" name="writeNewPrescription" class="btn btn-warning btn-lg" action="{% url 'doctorprofile' %}">Write new prescription</button> -->
         <!-- <form method = "post" id = "addnewmedicineform" action = "{% url 'createNewMedicine' %}" > -->
+         <form id="medicineform">
           {% csrf_token %}
           <div id = "addnewmedicine" class = 'hideout' >
-          <input id = "NewmedicineName" name="NewmedicineName" placeholder="Medicine Name"></input>
-          <select name="befAftFood" id ="befAftFood">
+          <input id = "NewmedicineName" name="NewmedicineName" placeholder="Medicine Name" required></input>
+          <select name="befAftFood" id ="befAftFood" required>
+            <option>Select the Option</option>
             <option>Before</option>
             <option>After</option>
+            <option></option>
           </select>
           <button id = "medsubmit" type="submit" class="btn btn-warning first" onclick="medAjaxData()">Add</button>
         </div>
-        <!-- </form> -->
+        </form>
+        
       <br>
       <li class="dropdown-divider" style="margin-left:25%;margin-right:25%;border-color:black"></li>
       <br>
@@ -117,7 +121,7 @@ Clinical-Prescription
           <li class="dropdown-divider" style="margin-left:25%;margin-right:25%;border-color:black"></li>
           <div class="form-inline" >
               <label for = "selectedPatient" style="color:rgb(0, 0, 0);"><strong>Patient Name: </strong></label>
-                <select name="selectedPatient" id = "selectedPatient" class="form-inline" placeholder="Select Patient">
+                <select name="selectedPatient" id = "selectedPatient" class="form-inline" placeholder="Select Patient" required>
                   <option value = "">select patient</option>
                     {% for patient in patients %}
                         <option value="{{ patient.name }}">{{ patient.name }}</option>
@@ -189,9 +193,9 @@ Clinical-Prescription
               <h6 name="beforeAfter" id = "beforeAfter" class="form-control">{{ beforeAfter }}</h6>
             </td>
             <td>
-              <select name="SelectedMedicine" id="SelectedMedicine" class="form-control" placeholder="Select Medicine">
+              <select name="SelectedMedicine" id="SelectedMedicine" class="form-control" placeholder="Select Medicine" required>
                     <option value="">Select Medicine</option>
-              {% for prescMedicine in prescMedicines %}
+                {% for prescMedicine in prescMedicines %}
                     
                     <option id ="jsonmedData" value="{{ prescMedicine.medicinename }}" >{{ prescMedicine.medicinename }}</option>
                     <a class="button" href ="{% url 'editAppointments' 1   %}">Edit</a>
@@ -224,7 +228,7 @@ Clinical-Prescription
               <h6 name="night" id = "night" class="form-control">{{ night }}</h6>
             </td>
             <td>
-              <select name="SelectedSession" id="SelectedSession" class="form-control hide">
+              <select name="SelectedSession" id="SelectedSession" class="form-control hide" required>
                 <option value="">Select dosage</option>
           {% for prescTime in prescTimeOfDay %}
                 <option value="{{ prescTime.timeoftheday }}">{{ prescTime.timeoftheday }}</option>
@@ -240,9 +244,9 @@ Clinical-Prescription
         <br>
         <br>
           <div class="form-inline" style = "margin-left: 70%;">
-            <h6 class="form-group" style="color:rgb(0, 0, 0);">For </h4>
-            <input name="noOfDays" id = "noOfDays" type="text" class="form-group" placeholder="days">
-            <h6 class="form-group" style="color:rgb(0, 0, 0);">days </h4>
+            <h6 class="form-group" style="color:rgb(0, 0, 0);">For </h6>
+            <input name="noOfDays" id = "noOfDays" type="text" class="form-group" placeholder="days" required>
+            <h6 class="form-group" style="color:rgb(0, 0, 0);">days </h6>
           </div>
 
           
@@ -324,7 +328,13 @@ Clinical-Prescription
           var befAftFood = $('#befAftFood').val();
 
           console.log('New Medicine Name:', newMedicineName);
-        console.log('Before/After Food:', befAftFood);
+          console.log('Before/After Food:', befAftFood);
+
+    //       if (!newMedicineName || !befAftFood) {
+    //     console.error('Both medicine name and before/after food fields are required');
+    //     alert('Both medicine name and before/after food fields are required');
+    //     return;
+    // }
 
           $.ajax({
             url : "{% url 'createNewMedicine' %}",

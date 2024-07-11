@@ -102,8 +102,8 @@ NDC-Prescription
       .medicinelay{
       z-index: 700px;
       position: absolute;
-      top:-50%;
-      right:-30%;
+      top:50%;
+      right:30%;
       margin: 700px;
       background: #e1e3e1; 
 
@@ -130,9 +130,11 @@ NDC-Prescription
     </style>
     <form method = "post" id = "addnewmedicineform" action = "{% url 'createNewMedicine' %}">
       {% csrf_token %}
+      <h6> {{ mederror }} </h6>
       <div id = "addnewmedicine" class = 'hideout'>
-      <input name="NewmedicineName" placeholder="Medicine Name"></input>
+      <input name="NewmedicineName" placeholder="Medicine Name" ></input>
       <select name="befAftFood" id ="befAftFood">
+        <option>Select the Option</option>
         <option>Before</option>
         <option>After</option>
       </select>

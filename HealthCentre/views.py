@@ -792,7 +792,7 @@ def verify_otp(request):
         else:
             request.session['doctorOtp'] = False
             # If OTP doesn't match, show error message
-            return render(request, 'HealthCentre/forgot_password.html', {'error': 'Invalid OTP. Please try again.'})
+            return render(request, 'HealthCentre/forgot_password.html', {'message': 'Invalid OTP. Please try again.'})
     else:
         request.session['doctorOtp'] = False
         return render(request, 'HealthCentre/forgot_password.html')
@@ -812,7 +812,7 @@ def reset_password(request):
                 exitingPasswrd = user.passwordHash
 
                 if exitingPasswrd == hashed_password:
-                    return render(request, 'HealthCentre/forgot_password.html',{'message' : 'Please try with diferent password'}) 
+                    return render(request, 'HealthCentre/forgot_password.html',{'message' : 'Password already taken,Please try with different password'}) 
 
                 else:    
                     user.passwordHash = hashed_password  # Ensure you're setting the correct field in your model
@@ -1199,15 +1199,22 @@ def createNewMedicine(request):
         print(request.POST)
         newMedicine = request.POST.get("NewmedicineName")
         befAft = request.POST.get("befAftFood")
-        
-        medicine = Medicine(medicinename = newMedicine, beforeafter = befAft, morning = "0", afternoon = "0", night = "0")
-        medicine.save()
-        data ={
-            "newMedicine" :newMedicine,
-            "befAft": befAft
-        }
+
+        if not newMedicine and befAft == 'Select the Option':
+            
+            data = {
+                'mederror': 'Both medicine name and before/after food fields are required'
+            }
+            return JsonResponse(data)
+        else:
+            medicine = Medicine(medicinename = newMedicine, beforeafter = befAft, morning = "0", afternoon = "0", night = "0")
+            medicine.save()
+            data ={
+                "newMedicine" :newMedicine,
+                "befAft": befAft
+            }
     # response = HttpResponseRedirect(reverse('doctorprofile'))
-    return JsonResponse(data)
+        return JsonResponse(data)
 
 def addingSessionData(request, SelectedSessionValue):
     try:
@@ -1528,10 +1535,17 @@ def createTimeline(request):
                 except Appointment.DoesNotExist:
                     for singleappointmentData in appointmentData:
                         singleappointmentData = None    
+
+                presmed = None
+                padMedSess = None
                 
                 try:
                     prescriptionData = Prescription.objects.filter(patient_id = selectedPatientID).order_by('timestamp')
                     # prescriptionDataNew = Prescription.objects.get(prescribingPatient="Prem Suryan")
+
+                    presmed = []
+                    padMedSess = []
+
 
                     for presData in prescriptionData:
                         presmed = presData.medicine.all()
@@ -1549,10 +1563,10 @@ def createTimeline(request):
                 doctorSpecific = Patient.objects.filter(doctorname = request.session['Name']).order_by('name')
                 
                 context = {
+                    "presmed" : presmed,     
                     "patients" : doctorSpecific,
                     "appointmentData" : appointmentData,
                     "prescriptionData" : prescriptionData, 
-                    "presmed" : presmed,     
                     "padMedSess" : padMedSess              
                 }
                 
@@ -1560,7 +1574,8 @@ def createTimeline(request):
                 return responseHeadersModifier(response)
                 # return JsonResponse(data)
             except Patient.DoesNotExist:
-                return JsonResponse({'error': 'Patient not found'}, status=404)
+                return HttpResponseRedirect(reverse('createTimeline'))
+                # return JsonResponse({'error': 'Patient not found'}, status=404)
         
 
 def deleteprescription(request, pk):
@@ -1984,20 +1999,6 @@ def countPrescriptionRows(request):
        }
        return JsonResponse(data)
 
-@csrf_exempt    
-def presMedAjaxData(request):
-    if request.method =='POST':
-        # patObjId = Prescription.objects.get(pk=PatientSelected)
-        medicineAjax = request.POST.get('medicineIsSelected')
-        sessionAjax = request.POST.get('sessionIsSelected')
-
-        data = {
-            "medicineAjax":medicineAjax,
-            "sessionAjax":sessionAjax
-        }
-
-        return JsonResponse(data)
-        
 
 def generatePDF(request):
 

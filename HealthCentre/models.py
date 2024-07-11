@@ -37,6 +37,7 @@ class Patient(models.Model):
     doctorname = models.CharField(max_length = 100)
 
 
+
     def __str__(self):
         return "Name : " + self.name + " Address : " + self.address + " Contact : " + self.contactNumber + " Email : " + self.email + " doctorname : " + self.doctorname
     class Meta:

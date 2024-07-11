@@ -51,7 +51,7 @@ Clinical-Appointment
             <h5>
               <label style="color:black">Please Select a Patient or Add New One</label>
             </h5>
-            <select name="selectedPatient" class="inputBox" placeholder="Select Patient" style="text-align: center;overflow-y: scroll;">
+            <select name="selectedPatient" class="inputBox" placeholder="Select Patient" style="text-align: center;overflow-y: scroll;" required>
               <option value = "">Select Patient</option>
                 {% for patient in patients %}
                     <option value="{{ patient.name }}" >{{ patient.name }}</option>
@@ -68,44 +68,44 @@ Clinical-Appointment
       <div class = "form-group">
       <div class="row">
         <div class="col">
-          <input id ="datePick" name="datePick" type="date"  class="inputBox">
+          <input id ="datePick" name="datePick" type="date"  class="inputBox" required>
         </div>
         <div class="col">
-          <input id ="timePick" name="timePick" type ="time" class="inputBox">
+          <input id ="timePick" name="timePick" type ="time" class="inputBox" required>
         </div>
       </div>
       
       
 
       {% comment %} <label for="EnterTimeHour" style="color:rgb(3, 3, 3)">  Time(HH:MM)-</label>
-      <select name="EnterTimeHour" id="EnterTimeHour" class = "form-group">
+      <select name="EnterTimeHour" id="EnterTimeHour" class = "form-group" required>
         {% for hour in hours %}
           <option value="{{ hour }}">{{ hour }}</option>
           {% endfor %}
       </select>
         
         <label for="EnterTimeMinute" style="color:rgb(3, 3, 3)">:</label>
-        <select name="EnterTimeMinute" id="EnterTimeMinute" class = "form-group">
+        <select name="EnterTimeMinute" id="EnterTimeMinute" class = "form-group" required>
             {% for minute in minutes %}
             <option value="{{ minute }}">{{ minute }}</option>
             {% endfor %}
         </select>
         <div class="form-group">
         <label for="EnterDate" style="color:rgb(3, 3, 3)">  Date(DD-MM-YY): </label>
-      <select name="EnterDate" id="EnterDate" class = "form-group">
+      <select name="EnterDate" id="EnterDate" class = "form-group" required>
         {% for date in dates %}
           <option value="{{ date }}">{{ date }}</option>
           {% endfor %}
       </select>
       <label for="EnterTimeMinute" style="color:rgb(3, 3, 3)">-</label>
-      <select name="EnterDateMonth" id="EnterDateMonth" class = "form-group">
+      <select name="EnterDateMonth" id="EnterDateMonth" class = "form-group" required>
         {% for month in months %}
           <option value="{{ month }}">{{ month }}</option>
           {% endfor %}
       </select>
 
       <label for="EnterYear" name = "EnterYear" style="color:rgb(3, 3, 3)"></label>
-      <select name="EnterYear" id="EnterYear" class = "form-group">
+      <select name="EnterYear" id="EnterYear" class = "form-group" required>
         {% for year in years %}
           <option value="{{ year }}">{{ year }}</option>
           {% endfor %}
@@ -117,7 +117,7 @@ Clinical-Appointment
         
           <div class="form-group">
               <!-- <label for="exampleFormControlTextarea1" style = "color:white">Please type the symptoms.</label> -->
-              <textarea name = "AppointmentDescription" class="form-control "  rows="5" placeholder="Appointment Description"></textarea>
+              <textarea name = "AppointmentDescription" class="form-control "  rows="5" placeholder="Appointment Description" required></textarea>
           </div>
             <!-- <input type="text" name="time" placeholder="Enter time"> -->
             <input type="submit" value="Submit">

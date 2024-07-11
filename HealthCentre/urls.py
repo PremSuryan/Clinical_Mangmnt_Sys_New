@@ -57,7 +57,6 @@ urlpatterns = [
     path('uploadExcel', views.uploadExcel, name = 'uploadExcel'),
     path('countPrescriptionRows', views.countPrescriptionRows, name = 'countPrescriptionRows'),
     path('uploadImage', views.uploadImage, name = 'uploadImage'),
-    path('presMedAjaxData', views.presMedAjaxData, name = 'presMedAjaxData'),
 ]
 
 # from django.urls import path
