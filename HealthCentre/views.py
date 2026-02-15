@@ -1,39 +1,41 @@
+import sys, os
+import time
+import requests
+import zipfile
+import pdfkit
+import asyncio
+import json
+import random
+import threading
+import openpyxl
+
+from datetime import datetime, time, timedelta, date
+from jinja2 import Template
+from weasyprint import HTML, CSS
+
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from .models import Doctor, Patient, Prescription, passwordHasher, emailHasher, Appointment, Medicine, timeofday, doctorlogo
 from django.db.models import Count, Q
 from django.contrib.auth.decorators import login_required
-from .forms import AppointmentSet, AppointmentSetForm, AppointmentForm
-from datetime import datetime, time, timedelta, date
-import time
 from django.utils import timezone
 from django.shortcuts import render
-import threading
-import sys, os
-# import pyautogui
-import openpyxl
 from django.db import connections, IntegrityError
 from django.core.exceptions import ValidationError
 from django.apps import apps
-import requests
-import zipfile
 from django.conf import settings
-# from WPP_Whatsapp import Create, PlaywrightSafeThread
-from weasyprint import HTML, CSS
-import pdfkit
 from django.template.loader import render_to_string, get_template
-from jinja2 import Template
-import asyncio
 from django.core.serializers import serialize
-import json
 from django.forms.models import model_to_dict
+from django.core.mail import send_mail
+
+from .models import Doctor, Patient, Prescription, passwordHasher, emailHasher, Appointment, Medicine, timeofday, doctorlogo
+from .forms import AppointmentSet, AppointmentSetForm, AppointmentForm
+
 if ('runserver' in sys.argv):
     from .Whatsapptestfile import whatsappApi, openWhatsapp, whatsappApiEdit, whatsappMedia, whatsappApiDoc
-    # import Whatsapptestfile
-from django.core.mail import send_mail
-import random
+
 
 def generate_otp():
     return str(random.randint(100000, 999999))
@@ -130,6 +132,7 @@ def closewhatsapp(request):
 
 def updateExcel(request):
     # while True:
+        xlPath = os.path.dirname(os.path.abspath(__file__)) #-----------------------> current dir
         xlPath = os.curdir #"D:\Dental-Software-Backup\Dental-Software"
         allfilesinpath = os.listdir(xlPath)
         xlFile = [file for file in allfilesinpath if file.lower().startswith('databasetables.xlsx')]
