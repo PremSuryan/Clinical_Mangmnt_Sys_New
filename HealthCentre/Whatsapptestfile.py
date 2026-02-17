@@ -4,6 +4,8 @@ import time
 from concurrent import futures
 import sys
 from . import views
+import WPP_Whatsapp.api.helpers.wa_version as _wa_ver
+
 # from playwright._impl import _api_types 
 # if __name__ == '__main__':
     # from .views import catchgenqr
@@ -12,6 +14,14 @@ from . import views
 # genqr = ""
 
     # openWhatsapp()
+
+"""
+command to check whatsapp brwsr in shell: 
+python manage.py shell
+from HealthCentre.Whatsapptestfile import openWhatsapp
+openWhatsapp.wp()
+
+"""
 
 
 def catchqr(qrCode: str , asciiQR: str , attempt: int, urlCode: str):
@@ -33,6 +43,15 @@ def catchqr(qrCode: str , asciiQR: str , attempt: int, urlCode: str):
             # print(attempt)
             # print(urlCode)
 
+    # Patch broken version lookup before importing WPP_Whatsapp
+
+# async def _patched_get_page_content(version):
+#     # Return a known working WA Web version
+#     return "2.3000.1015901307"
+
+# _wa_ver.getPageContent = _patched_get_page_content
+
+
 creator = ""
 client = ""
 # wpIsConnected = False
@@ -40,16 +59,22 @@ class openWhatsapp():
         # start client with your session name
     client = None
     creator = None
+
     @classmethod
     def wp(cls):
     
         # from .views import catchgenqr
         your_session_name = "clinical" #"test"
         # global creator
-        cls.creator = Create(session=your_session_name, catchQR= views.catchgenqr , logQR= True) #catchgenqr
+        cls.creator = Create(session=your_session_name,
+                              catchQR= views.catchgenqr ,
+                                logQR= True ) #catchgenqr  version="2.3000.1023780461"
+        
         settings.GLOBAL_VAR = creator
         settings.WP_IS_CONNECTED = False
         # try:
+        # import time
+        # time.sleep(5)
         cls.client = cls.creator.start()
         # if client.waitForLogin():
         #     time.sleep(10) 

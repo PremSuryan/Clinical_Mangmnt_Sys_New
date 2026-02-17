@@ -122,6 +122,7 @@ renderedHTML = " "
 def openwhatsapp(request):
     # openWhatsapp()
     openWhatsapp.wp()
+    # threading.Thread(target=openWhatsapp.wp, daemon=True).start()
     # return render(request, 'HealthCentre/adminPortal.html')
     return HttpResponseRedirect(reverse("admin"))
 
@@ -1844,7 +1845,10 @@ def backgroundtastForUpdatingExcel():
 qrgen = ""
 def catchgenqr(qrCode: str , asciiQR: str , attempt: int, urlCode: str):
     global qrgen
-    qrgen = qrCode
+    # qrgen = qrCode if qrCode else ""
+    qrgen = qrCode 
+    return qrgen
+
 
 def wpconnect():
     # docName = Settings.globalDocName
