@@ -5,7 +5,7 @@ def sum1(num):
 
     return tol
 
-num = [1,2,0,3]
+num = [1,2,1,0,3,1]
 total = sum1(num)
 left = 0
 for ii in range(len(num)):

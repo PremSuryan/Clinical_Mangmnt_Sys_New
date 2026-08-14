@@ -4,6 +4,7 @@ def anagram(inp):
     res = []
     
     for i in inp:
+        # sorting = "".join(sorted(i))
         sorting = "".join(sorted(i))
         if sorting not in dic:
             dic[sorting] = [i]

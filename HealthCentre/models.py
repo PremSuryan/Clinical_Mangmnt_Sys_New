@@ -26,10 +26,12 @@ class doctorlogo(models.Model):
     logo = models.ImageField(upload_to=r'static\HealthCentre\images', null=True, blank=True)
     # HealthCentre\static\HealthCentre\images
 class Patient(models.Model):
-    name = models.CharField(unique = True, max_length = 30)
+    # name = models.CharField(unique = True, max_length = 30)
+    name = models.CharField(max_length = 30)
     address = models.CharField(max_length = 2000)
     contactNumber = models.CharField(max_length = 10, db_column = 'contactnumber')
-    email = models.EmailField(unique = True, max_length = 255, null= True, blank= True)
+    # email = models.EmailField(unique = True, max_length = 255, null= True, blank= True)
+    email = models.EmailField(max_length = 255, null= True, blank= True)
     rollNumber = models.CharField(max_length = 8, db_column = 'rollnumber') 
     passwordHash = models.CharField(max_length = 64, db_column = 'passwordhash')
     emailHash = models.CharField(max_length = 64, db_column = 'emailhash')  

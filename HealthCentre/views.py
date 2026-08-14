@@ -224,15 +224,23 @@ def updateExcel(request):
         response['Content-Disposition'] = 'attachment; filename = databasetables.xlsx'
         return response
 
-
+from django.contrib import messages
 def uploadExcel(request):
 
     if request.method == 'GET':
         return HttpResponseRedirect(reverse('patMed'))
     
     if request.method == 'POST':
-        excel_file = request.FILES['excel']
+        # excel_file = request.FILES['excel']
+        excel_file = request.FILES.get('excel')
+        if not excel_file:
+            messages.error(
+                request,
+                "Please click 'Choose File', select an Excel file, and then click 'Upload Excel'."
+            )
+            return redirect('patMed')
         # you may put validations here to check extension or file size
+        messages.success(request, "Excel file uploaded successfully.")
         workbook = openpyxl.load_workbook(excel_file)
         worksheet = workbook.get_sheet_by_name('sheet1')
         for row in worksheet.iter_rows(min_row=2, values_only= True):
@@ -241,11 +249,25 @@ def uploadExcel(request):
             for existingDetails in existingPatient:
                 doctname = request.session['Name']
                 doctpk = Doctor.objects.get(name = doctname)
-                if existingDetails.name == name or existingDetails.rollNumber == age or existingDetails.email == email or existingDetails.passwordHash == sex or existingDetails.address == address or existingDetails.contactNumber == contactNumber or existingDetails.doctorname == doctname:
+  
+                if  existingDetails.name == name or existingDetails.rollNumber == age or existingDetails.email == email or existingDetails.passwordHash == sex or existingDetails.address == address or existingDetails.contactNumber == contactNumber or existingDetails.doctorname == doctname:
                     emailHash = emailHasher(email)
-                    patient = Patient(name = name,rollNumber = age, email = email, passwordHash = sex, address = address, 
-                                    contactNumber = contactNumber, emailHash = emailHash, doctorname = doctname, doctorid = doctpk)
-                    patient.save()
+                    # patient = Patient(name = name,rollNumber = age, email = email, passwordHash = sex, address = address, 
+                    #             contactNumber = contactNumber, emailHash = emailHash, doctorname = doctname, doctorid = doctpk)
+
+                    patient=Patient.objects.update_or_create(name = name,
+                                                              doctorid=doctpk,
+                                                            email=email,
+                                                                defaults={
+                                                                "rollNumber": age,
+                                                                "passwordHash": sex,
+                                                                "address": address,
+                                                                "contactNumber": contactNumber,
+                                                                "emailHash" : emailHash, 
+                                                                "doctorname" : doctname
+                                                            }
+                                                                )
+                    # patient.save()
             if not existingPatient :
                     doctorname = request.session['Name']
                     doctorpk = Doctor.objects.get(name = doctorname)
@@ -619,7 +641,6 @@ def yourPrescriptions(request):
         
 def login(request):
     """ Function for logging in the user. """
-
     # Calling session variables checker
     request = requestSessionInitializedChecker(request)
     # openWhatsapp.wp()
@@ -986,10 +1007,12 @@ def doctorappointments(request):
         
         if request.session['goToAppointmentsPage']:
             if request.POST['selectedPatient'] == "":
-                appointmentPatient = request.POST['PatientNameForAppointment']
+                # appointmentPatient = request.POST['PatientNameForAppointment']
+                appointmentPatient = request.POST.get('PatientNameForAppointment')
                 # patient = Patient.objects.create(name=prescpatient)
             else:
-                appointmentPatient = request.POST['selectedPatient']
+                # appointmentPatient = request.POST['selectedPatient']
+                appointmentPatient = request.POST.get('selectedPatient')
                 # prescpatient = request.POST['selectedPatient']
                 patient_id = request.POST['selectedPatient'] 
                 docName = request.session['Name']
@@ -1348,7 +1371,9 @@ def doctorprofile(request):
         if request.GET.get('SelectedPat') != None and request.method == 'GET':
             PatientName = request.GET.get('SelectedPat', None)
             try: 
-                selectedPatient = Patient.objects.get(name = PatientName)
+                doctname = request.session['Name']
+                doctor = Doctor.objects.get(name=doctname)
+                selectedPatient = Patient.objects.get(name = PatientName,doctorid=doctor)
                 data = {
                     "patientName": selectedPatient.name,
                     "patientSex" : selectedPatient.passwordHash,

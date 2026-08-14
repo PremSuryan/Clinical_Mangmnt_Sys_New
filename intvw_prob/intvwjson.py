@@ -51,7 +51,7 @@ user = {
 # res = user['profile']['address']
 res = user.get('profile',{}).get('address',[])
 res = [re['city'] for re in res if re['city']]
-# print(res)
+print(res)
 
 
 #---------------------------------
